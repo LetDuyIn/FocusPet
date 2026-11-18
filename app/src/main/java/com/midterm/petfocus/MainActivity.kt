@@ -21,6 +21,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.midterm.petfocus.logic.GameRules
+import com.midterm.petfocus.ui.focus.FocusMode
 import com.midterm.petfocus.ui.focus.FocusResult
 import com.midterm.petfocus.ui.focus.FocusViewModel
 import com.midterm.petfocus.reminder.Reminders
@@ -85,7 +87,10 @@ class MainActivity : AppCompatActivity() {
                     .show()
             }
         }.also { cb ->
-            lifecycleScope.launch { focusVm.state.collect { cb.isEnabled = it.running } }
+            // Giờ nghỉ thì cho thoát bình thường
+            lifecycleScope.launch {
+                focusVm.state.collect { cb.isEnabled = it.running && it.mode == FocusMode.FOCUS }
+            }
         })
 
         if (savedInstanceState == null) showOnboardingIfNeeded()
@@ -141,20 +146,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun showFocusResult(result: FocusResult) {
         focusVm.consumeResult()
-        val (title, message) = when (result) {
+        val dialog = MaterialAlertDialogBuilder(this)
+        when (result) {
             is FocusResult.Completed -> {
                 val r = result.reward
                 var msg = "Bạn đã tập trung ${result.minutes} phút.\n+${r.coins} 🪙 • +${r.exp} EXP ⭐"
                 if (r.levelsGained > 0) msg += "\n🎉 Thú cưng đã lên cấp!"
-                "Tuyệt vời! 🎉" to msg
+                val longBreak = result.breakMinutes >= GameRules.LONG_BREAK_MINUTES
+                msg += if (longBreak) "\n\nĐã xong 4 phiên, nghỉ dài ${result.breakMinutes} phút nhé!"
+                else "\n\nNghỉ ngắn ${result.breakMinutes} phút rồi học tiếp?"
+                dialog.setTitle(ArtIcons.art(this, "Tuyệt vời! 🎉"))
+                    .setMessage(ArtIcons.art(this, msg))
+                    .setPositiveButton("Nghỉ ${result.breakMinutes} phút") { _, _ -> focusVm.startBreak(result.breakMinutes) }
+                    .setNegativeButton("Để sau", null)
             }
-            is FocusResult.Failed -> "Phiên tập trung thất bại" to result.reason
+            is FocusResult.Failed -> dialog.setTitle("Phiên tập trung thất bại")
+                .setMessage(ArtIcons.art(this, result.reason))
+                .setPositiveButton("OK", null)
+            FocusResult.BreakDone -> dialog.setTitle(ArtIcons.art(this, "Hết giờ nghỉ 🌿"))
+                .setMessage(ArtIcons.art(this, "Mèo đã nạp lại năng lượng ⚡ Sẵn sàng phiên tiếp theo chưa?"))
+                .setPositiveButton("Bắt đầu phiên mới") { _, _ -> focusVm.start() }
+                .setNegativeButton("Để sau", null)
         }
-        MaterialAlertDialogBuilder(this)
-            .setTitle(ArtIcons.art(this, title))
-            .setMessage(ArtIcons.art(this, message))
-            .setPositiveButton("OK", null)
-            .show()
+        dialog.show()
         petVm.refresh()
     }
 

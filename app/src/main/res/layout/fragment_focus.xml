@@ -83,17 +83,21 @@
         <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_preset_15"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_margin="3dp"
+            android:paddingHorizontal="4dp"
             android:text="@string/btn_preset_15"
             app:cornerRadius="20dp" />
 
         <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_preset_25"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_margin="3dp"
+            android:paddingHorizontal="4dp"
             android:text="@string/btn_preset_25"
             app:cornerRadius="20dp"
             android:backgroundTint="@color/peach" />
@@ -101,10 +105,24 @@
         <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_preset_45"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_margin="4dp"
+            android:layout_margin="3dp"
+            android:paddingHorizontal="4dp"
             android:text="@string/btn_preset_45"
+            app:cornerRadius="20dp" />
+
+        <!-- Tự chọn số phút (5–120) -->
+        <com.midterm.petfocus.ui.art.ArtButton
+            android:id="@+id/btn_preset_custom"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="3dp"
+            android:paddingHorizontal="4dp"
+            android:text="@string/btn_preset_custom"
             app:cornerRadius="20dp" />
     </LinearLayout>
 

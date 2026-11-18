@@ -188,6 +188,17 @@ class GameRulesTest {
         assertEquals(40, GameRules.applyExpMultiplier(pet(), 40))
     }
 
+    // ---------- Pomodoro ----------
+
+    @Test fun breakMinutes_nghiNganNghiDai() {
+        assertEquals(5, GameRules.breakMinutesAfter(1))
+        assertEquals(5, GameRules.breakMinutesAfter(3))
+        assertEquals(15, GameRules.breakMinutesAfter(4))
+        assertEquals(5, GameRules.breakMinutesAfter(5))
+        assertEquals(15, GameRules.breakMinutesAfter(8))
+        assertEquals(5, GameRules.breakMinutesAfter(0))
+    }
+
     // ---------- Tâm trạng ----------
 
     @Test fun mood_uuTienBuonNguTruoc() {

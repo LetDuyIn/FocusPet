@@ -201,6 +201,17 @@ class GameRepository(private val db: AppDatabase) {
         grant(coins, exp, happinessDelta = GameRules.FOCUS_SUCCESS_HAPPINESS)
     }
 
+    /** Nghỉ đủ giờ Pomodoro: mèo hồi sức và vui hơn một chút. */
+    suspend fun finishBreak() = db.withTransaction {
+        val p = loadPet(now())
+        petDao.upsert(
+            p.copy(
+                energy = (p.energy + GameRules.BREAK_ENERGY).coerceAtMost(GameRules.MAX_STAT),
+                happiness = (p.happiness + GameRules.BREAK_HAPPINESS).coerceAtMost(GameRules.MAX_STAT)
+            )
+        )
+    }
+
     suspend fun failFocus(startTime: Long, planned: Int, status: SessionStatus) = db.withTransaction {
         val actual = ((now() - startTime) / 60_000).toInt()
         focusDao.insert(
