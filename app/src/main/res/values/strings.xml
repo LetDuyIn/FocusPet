@@ -53,6 +53,16 @@
     <string name="nav_focus">Tập trung</string>
     <string name="nav_stats">Thống kê</string>
 
+    <!-- Widget màn hình chính -->
+    <string name="widget_description">Xem nhanh mèo, xu và việc còn lại</string>
+    <string name="widget_placeholder_name">Mimi • Level 1</string>
+    <string name="widget_pet_desc">Thú cưng</string>
+    <string name="widget_hunger">No bụng</string>
+    <string name="widget_happiness">Vui vẻ</string>
+    <string name="widget_coins">Xu</string>
+    <string name="widget_tasks">Việc còn lại</string>
+    <string name="btn_add_widget">🐾 Thêm widget ra màn hình chính</string>
+
     <!-- Nhiệm vụ hằng ngày -->
     <string name="quests_title">Nhiệm vụ hôm nay 📋</string>
 

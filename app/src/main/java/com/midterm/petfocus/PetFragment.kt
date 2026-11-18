@@ -23,6 +23,7 @@ import com.midterm.petfocus.logic.Mood
 import com.midterm.petfocus.logic.PetAction
 import com.midterm.petfocus.ui.RewardFx
 import com.midterm.petfocus.ui.art.ArtIcons
+import com.midterm.petfocus.widget.PetWidget
 import com.midterm.petfocus.ui.pet.PetReaction
 import com.midterm.petfocus.ui.pet.PetViewModel
 import com.midterm.petfocus.ui.pet.ShopSheet
@@ -58,6 +59,12 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
 
         b.tvPetLevel.setOnLongClickListener { showRenameDialog(); true }
         b.cardPetStage.setOnClickListener { vm.act(PetAction.CUDDLE) }
+        b.btnAddWidget.setOnClickListener {
+            if (!PetWidget.requestPin(requireContext())) {
+                Snackbar.make(b.root, "Launcher này chưa hỗ trợ. Nhấn giữ màn hình chính → Widgets → PetFocus.", Snackbar.LENGTH_LONG).show()
+            }
+        }
+
         // Bấm vào ô xu để mở cửa hàng
         b.tvCoins.setOnClickListener {
             if (childFragmentManager.findFragmentByTag(ShopSheet.TAG) == null) {
@@ -87,6 +94,7 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
                 // Mỗi phút: trừ chỉ số theo thời gian thật
                 launch {
                     while (true) {
+                        b.btnAddWidget.isVisible = PetWidget.canRequestPin(requireContext())
                         vm.refresh()
                         delay(60_000)
                     }

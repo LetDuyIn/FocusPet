@@ -58,6 +58,9 @@ interface TaskDao {
     @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 1 AND completedAt >= :since")
     suspend fun countDoneSince(since: Long): Int
 
+    @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 0")
+    suspend fun countPending(): Int
+
     @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 1 AND difficulty = 'HARD' AND completedAt >= :since")
     suspend fun countHardDoneSince(since: Long): Int
 

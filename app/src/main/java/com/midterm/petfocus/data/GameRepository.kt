@@ -247,6 +247,8 @@ class GameRepository(private val db: AppDatabase) {
 
     suspend fun overdueCount(): Int = taskDao.countOverdue(now())
 
+    suspend fun pendingTaskCount(): Int = taskDao.countPending()
+
     // ---------- Tập trung ----------
     fun focusMinutesToday(): Flow<Int> = focusDao.observeMinutesSince(today())
     fun focusSessionsToday(): Flow<Int> = focusDao.observeCompletedSince(today())

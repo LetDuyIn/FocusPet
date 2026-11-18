@@ -22,6 +22,7 @@ import com.midterm.petfocus.R
 import com.midterm.petfocus.logic.GameRules
 import com.midterm.petfocus.logic.Mood
 import com.midterm.petfocus.ui.art.ArtIcons
+import com.midterm.petfocus.widget.PetWidget
 import java.util.concurrent.TimeUnit
 
 object Reminders {
@@ -93,6 +94,8 @@ class PetReminderWorker(context: Context, params: WorkerParameters) : CoroutineW
             else -> if (overdue > 0) "Bạn có $overdue việc đã quá hạn. Làm xong để kiếm xu nhé!" else null
         }
         if (text != null) Reminders.notifyIfDue(applicationContext, "FocusPet", ArtIcons.plain(text))
+        // Chỉ số mèo giảm theo thời gian nên widget cũng cần vẽ lại định kỳ
+        PetWidget.refresh(applicationContext)
         return Result.success()
     }
 }
