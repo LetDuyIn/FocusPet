@@ -1,12 +1,14 @@
 package com.midterm.petfocus.ui.tasks
 
-import android.graphics.Color
 import android.graphics.Paint
+import androidx.core.content.ContextCompat
+import com.midterm.petfocus.R
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.midterm.petfocus.data.Repeat
 import com.midterm.petfocus.data.Task
 import com.midterm.petfocus.databinding.ItemTaskBinding
 import com.midterm.petfocus.logic.GameRules
@@ -15,7 +17,9 @@ import java.util.Date
 import java.util.Locale
 
 class TaskAdapter(
-    private val onComplete: (Task) -> Unit,
+    /** Trả về cả view của checkbox để hiện hiệu ứng "+xu" ngay tại đó. */
+    private val onComplete: (Task, android.view.View) -> Unit,
+    private val onUncheck: (Task) -> Unit,
     private val onEdit: (Task) -> Unit,
     private val onDelete: (Task) -> Unit
 ) : ListAdapter<Task, TaskAdapter.VH>(Diff) {
@@ -41,8 +45,12 @@ class TaskAdapter(
         // Gỡ listener trước khi set trạng thái để không kích hoạt nhầm khi RecyclerView tái sử dụng view
         b.cbTaskDone.setOnCheckedChangeListener(null)
         b.cbTaskDone.isChecked = task.isDone
-        b.cbTaskDone.isEnabled = !task.isDone
-        b.cbTaskDone.setOnCheckedChangeListener { _, checked -> if (checked) onComplete(task) }
+        b.cbTaskDone.setOnCheckedChangeListener { v, checked ->
+            when {
+                checked && !task.isDone -> onComplete(task, v)
+                !checked && task.isDone -> onUncheck(task)
+            }
+        }
 
         val overdue = GameRules.isOverdue(task, now)
         val due = task.dueDate?.let { dateFormat.format(Date(it)) }
@@ -53,11 +61,11 @@ class TaskAdapter(
                 append("${task.difficulty.label} • +${task.difficulty.coins} Xu • +${task.difficulty.exp} EXP")
                 if (due != null) append(" • Hạn $due")
             }
-        }
-        val (bg, fg) = if (overdue) "#FEE2E2" to "#B91C1C" else "#D1FAE5" to "#00734F"
-        b.tvRewardBadge.backgroundTintList = null
-        b.tvRewardBadge.setBackgroundColor(Color.parseColor(bg))
-        b.tvRewardBadge.setTextColor(Color.parseColor(fg))
+        } + if (task.repeat != Repeat.NONE) " • 🔁 ${task.repeat.label}" else ""
+        val ctx = b.root.context
+        val (bg, fg) = if (overdue) R.color.danger_bg to R.color.danger_text else R.color.reward_bg to R.color.reward_text
+        b.tvRewardBadge.setBackgroundColor(ContextCompat.getColor(ctx, bg))
+        b.tvRewardBadge.setTextColor(ContextCompat.getColor(ctx, fg))
 
         b.root.setOnClickListener { if (!task.isDone) onEdit(task) }
         b.btnDeleteTask.setOnClickListener { onDelete(task) }

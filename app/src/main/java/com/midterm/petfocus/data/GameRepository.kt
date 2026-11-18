@@ -1,6 +1,7 @@
 package com.midterm.petfocus.data
 
 import androidx.room.withTransaction
+import com.midterm.petfocus.logic.Badge
 import com.midterm.petfocus.logic.GameRules
 import com.midterm.petfocus.logic.ItemType
 import com.midterm.petfocus.logic.PetAction
@@ -11,6 +12,7 @@ import com.midterm.petfocus.logic.StatsSnapshot
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 
 sealed class ActionResult {
     data class Success(val message: String, val levelsGained: Int) : ActionResult()
@@ -26,6 +28,7 @@ class GameRepository(private val db: AppDatabase) {
     private val taskDao = db.taskDao()
     private val focusDao = db.focusDao()
     private val ownedDao = db.ownedItemDao()
+    private val badgeDao = db.badgeDao()
 
     private fun now() = System.currentTimeMillis()
     private fun today() = GameRules.startOfDay(now())
@@ -58,13 +61,14 @@ class GameRepository(private val db: AppDatabase) {
 
     private suspend fun grant(coins: Int, exp: Int, happinessDelta: Float = 0f): Reward {
         val pet = loadPet(now())
+        val actualExp = GameRules.applyExpMultiplier(pet, exp)
         val withCoins = pet.copy(
             coins = (pet.coins + coins).coerceAtLeast(0),
             happiness = (pet.happiness + happinessDelta).coerceIn(0f, GameRules.MAX_STAT)
         )
-        val (leveled, gained) = GameRules.addExp(withCoins, exp)
+        val (leveled, gained) = GameRules.addExp(withCoins, actualExp)
         petDao.upsert(leveled)
-        return Reward(coins, exp, gained)
+        return Reward(coins, actualExp, gained)
     }
 
     // ---------- Công việc ----------
@@ -76,14 +80,38 @@ class GameRepository(private val db: AppDatabase) {
         if (task.id == 0L) taskDao.insert(task) else taskDao.update(task)
     }
 
-    /** Đánh dấu xong và trao thưởng. Trả về null nếu task đã xong từ trước (tránh nhận thưởng 2 lần). */
+    /**
+     * Đánh dấu xong và trao thưởng. Trả về null nếu task đã xong từ trước (tránh nhận thưởng 2 lần).
+     * Việc lặp lại thì tự tạo việc kế tiếp với hạn mới.
+     */
     suspend fun completeTask(taskId: Long): Reward? = db.withTransaction {
         val task = taskDao.get(taskId) ?: return@withTransaction null
         if (task.isDone) return@withTransaction null
         val now = now()
         val (coins, exp) = GameRules.taskReward(task, now)
-        taskDao.update(task.copy(isDone = true, completedAt = now, coinsEarned = coins, expEarned = exp))
-        grant(coins, exp, happinessDelta = 3f)
+        val reward = grant(coins, exp, happinessDelta = 3f)
+        // Lưu số EXP thực nhận (có thể bị giảm nửa khi mèo giận) để bỏ tick trừ lại cho đúng
+        taskDao.update(task.copy(isDone = true, completedAt = now, coinsEarned = reward.coins, expEarned = reward.exp))
+        GameRules.nextDueDate(task, now)?.let { nextDue ->
+            taskDao.insert(
+                task.copy(
+                    id = 0, dueDate = nextDue, isDone = false, completedAt = null,
+                    coinsEarned = 0, expEarned = 0, createdAt = now, parentId = task.id
+                )
+            )
+        }
+        reward
+    }
+
+    /** Bỏ tick một việc đã xong: trừ lại đúng số xu/EXP đã nhận, xóa việc lặp kế tiếp nếu chưa làm. */
+    suspend fun uncompleteTask(taskId: Long): Reward? = db.withTransaction {
+        val task = taskDao.get(taskId) ?: return@withTransaction null
+        if (!task.isDone) return@withTransaction null
+        val pet = GameRules.removeExp(loadPet(now()), task.expEarned)
+        petDao.upsert(pet.copy(coins = (pet.coins - task.coinsEarned).coerceAtLeast(0)))
+        taskDao.update(task.copy(isDone = false, completedAt = null, coinsEarned = 0, expEarned = 0))
+        taskDao.deletePendingChildren(task.id)
+        Reward(task.coinsEarned, task.expEarned)
     }
 
     suspend fun deleteTask(task: Task) = taskDao.delete(task)
@@ -136,6 +164,16 @@ class GameRepository(private val db: AppDatabase) {
         pet
     ) { sessions, taskTimes, failed, p ->
         StatsCalculator.build(sessions, taskTimes, failed, p.level, now())
+    }
+
+    // ---------- Huy hiệu ----------
+    val claimedBadges: Flow<Set<String>> = badgeDao.observeClaimed().map { it.toSet() }
+
+    /** Nhận xu thưởng của một huy hiệu đã mở khóa. Mỗi huy hiệu chỉ nhận một lần. */
+    suspend fun claimBadge(badge: Badge, snapshot: StatsSnapshot): Reward? = db.withTransaction {
+        if (!badge.unlocked(snapshot) || badgeDao.isClaimed(badge.name) > 0) return@withTransaction null
+        badgeDao.insert(BadgeClaim(badge.name, now()))
+        grant(badge.rewardCoins, 0, happinessDelta = 5f)
     }
 
     // ---------- Nhắc nhở ----------

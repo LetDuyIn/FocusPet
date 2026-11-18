@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bản tối: chỉ đổi nền, chữ và các nhãn; màu nhấn giữ nguyên -->
+    <color name="bg_cream">#1C1A24</color>
+    <color name="surface_white">#2A2733</color>
+    <color name="text_primary">#ECEAF5</color>
+    <color name="text_secondary">#A9A6BD</color>
+    <color name="card_stroke">#3A3648</color>
+    <color name="bubble_stroke">#4A3A30</color>
+
+    <color name="reward_bg">#1E3A2F</color>
+    <color name="reward_text">#6EE7B7</color>
+    <color name="danger_bg">#4A1F1F</color>
+    <color name="danger_text">#FCA5A5</color>
+
+    <color name="chart_empty">#3A3240</color>
+    <color name="locked_gray">#4A4658</color>
+</resources>

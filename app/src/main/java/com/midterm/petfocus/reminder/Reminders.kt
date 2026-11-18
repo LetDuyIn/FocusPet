@@ -84,6 +84,7 @@ class PetReminderWorker(context: Context, params: WorkerParameters) : CoroutineW
         val pet = repo.currentPet()
         val overdue = repo.overdueCount()
         val text = when (GameRules.mood(pet)) {
+            Mood.ANGRY -> "${pet.name} giận dỗi rồi vì bị bỏ đói! Vào cho ăn để làm lành nhé 😾"
             Mood.HUNGRY -> "${pet.name} đói lắm rồi, vào cho ăn đi Sen ơi 🍣"
             Mood.SAD -> "${pet.name} đang buồn, vào nựng một chút nhé 😿"
             Mood.SLEEPY -> "${pet.name} mệt rồi, cho ${pet.name} đi ngủ nha 😴"

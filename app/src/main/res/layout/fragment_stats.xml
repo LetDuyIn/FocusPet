@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Thống kê 📊"
+            android:text="@string/fragment_stats_text"
             android:textColor="@color/text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
@@ -24,8 +24,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Giữ chuỗi mỗi ngày để mở khóa huy hiệu!"
-            android:textColor="#8A87A0"
+            android:text="@string/tv_stats_subtitle"
+            android:textColor="@color/text_secondary"
             android:textSize="13sp" />
 
         <!-- 4 ô số liệu -->
@@ -82,7 +82,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Phút tập trung 7 ngày qua"
+                    android:text="@string/fragment_stats_text_2"
                     android:textColor="@color/text_primary"
                     android:textSize="15sp"
                     android:textStyle="bold" />
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Huy hiệu"
+            android:text="@string/tv_badges_title"
             android:textColor="@color/text_primary"
             android:textSize="17sp"
             android:textStyle="bold" />

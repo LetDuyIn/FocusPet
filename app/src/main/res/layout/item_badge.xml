@@ -41,7 +41,7 @@
                 android:id="@+id/tv_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#8A87A0"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -50,5 +50,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="18sp" />
+
+        <!-- Hiện khi huy hiệu đã mở khóa nhưng chưa nhận thưởng -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_claim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:cornerRadius="18dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

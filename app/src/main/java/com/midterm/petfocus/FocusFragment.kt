@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -25,7 +26,9 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
     private val vm: FocusViewModel by activityViewModels()
     private val petVm: PetViewModel by activityViewModels()
 
-    private val peach = Color.parseColor("#FF9F6B")
+    private val peach get() = ContextCompat.getColor(requireContext(), R.color.peach)
+    private val surface get() = ContextCompat.getColor(requireContext(), R.color.surface_white)
+    private val muted get() = ContextCompat.getColor(requireContext(), R.color.text_secondary)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val b = FragmentFocusBinding.bind(view)
@@ -80,12 +83,13 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
 
         b.btnStartFocus.text = if (s.running) "Bỏ cuộc" else "Bắt đầu tập trung"
         b.btnStartFocus.backgroundTintList =
-            ColorStateList.valueOf(if (s.running) Color.parseColor("#8A87A0") else peach)
+            ColorStateList.valueOf(if (s.running) muted else peach)
 
         presets.forEach { (btn, min) ->
             val selected = min == s.selectedMinutes
             btn.isEnabled = !s.running
-            btn.backgroundTintList = ColorStateList.valueOf(if (selected) peach else Color.WHITE)
+            btn.isAllCaps = false
+            btn.backgroundTintList = ColorStateList.valueOf(if (selected) peach else surface)
             btn.setTextColor(if (selected) Color.WHITE else peach)
             btn.strokeColor = ColorStateList.valueOf(peach)
             btn.strokeWidth = if (selected) 0 else resources.displayMetrics.density.toInt()

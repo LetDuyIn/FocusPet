@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import com.midterm.petfocus.R
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -61,7 +63,9 @@ class ShopSheet : BottomSheetDialogFragment() {
                 launch {
                     vm.reactions.collect {
                         b.tvShopMessage.text = it.text
-                        b.tvShopMessage.setTextColor(Color.parseColor(if (it.success) "#00734F" else "#B91C1C"))
+                        b.tvShopMessage.setTextColor(
+                            ContextCompat.getColor(requireContext(), if (it.success) R.color.reward_text else R.color.danger_text)
+                        )
                     }
                 }
             }
@@ -89,7 +93,8 @@ private class ShopAdapter(private val onClick: (ShopRow) -> Unit) :
         b.tvEmoji.text = item.emoji
         b.tvName.text = item.name
         b.tvDesc.text = item.description
-        item.color?.let { b.tvEmoji.setBackgroundColor(Color.parseColor(it)) }
+        // Đặt lại nền mỗi lần bind để view tái sử dụng không giữ màu của món trước
+        b.tvEmoji.setBackgroundColor(item.color?.let { Color.parseColor(it) } ?: Color.TRANSPARENT)
 
         val isBg = item.type == ItemType.BACKGROUND
         val (label, enabled) = when {
@@ -101,15 +106,12 @@ private class ShopAdapter(private val onClick: (ShopRow) -> Unit) :
         b.btnBuy.text = label
         b.btnBuy.isEnabled = enabled
         b.btnBuy.alpha = if (enabled && !row.owned && !row.affordable) 0.5f else 1f
-        b.btnBuy.backgroundTintList = ColorStateList.valueOf(
-            Color.parseColor(
-                when {
-                    isBg && row.owned -> "#6BCB9F"
-                    row.locked -> "#C9C6D6"
-                    else -> "#FF9F6B"
-                }
-            )
-        )
+        val tint = when {
+            isBg && row.owned -> R.color.mint
+            row.locked -> R.color.locked_gray
+            else -> R.color.peach
+        }
+        b.btnBuy.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(b.root.context, tint))
         b.btnBuy.setTextColor(Color.WHITE)
         b.btnBuy.setOnClickListener { onClick(row) }
     }

@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.midterm.petfocus.FocusPetApp
+import com.midterm.petfocus.data.Repeat
 import com.midterm.petfocus.data.Task
 import com.midterm.petfocus.logic.GameRules
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,11 +50,19 @@ class TasksViewModel(app: Application) : AndroidViewModel(app) {
     fun save(task: Task) = viewModelScope.launch { repo.saveTask(task) }
 
     fun complete(task: Task) = viewModelScope.launch {
+        val (_, expectedExp) = GameRules.taskReward(task, System.currentTimeMillis())
         val reward = repo.completeTask(task.id) ?: return@launch
         val late = if (reward.coins < task.difficulty.coins) " (trễ hạn nên chỉ nhận một nửa)" else ""
         var msg = "Xong việc! +${reward.coins} xu • +${reward.exp} EXP$late"
+        if (reward.exp < expectedExp) msg += "\n😾 Mèo đang giận nên chỉ nhận nửa EXP"
+        if (task.repeat != Repeat.NONE) msg += "\n🔁 Đã tạo việc cho lần kế tiếp"
         if (reward.levelsGained > 0) msg += "\n🎉 Thú cưng đã lên cấp!"
         _messages.emit(msg)
+    }
+
+    fun uncomplete(task: Task) = viewModelScope.launch {
+        val r = repo.uncompleteTask(task.id) ?: return@launch
+        _messages.emit("Đã bỏ đánh dấu. Trừ lại ${r.coins} xu • ${r.exp} EXP")
     }
 
     fun delete(task: Task) = viewModelScope.launch { repo.deleteTask(task) }

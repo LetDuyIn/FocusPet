@@ -17,16 +17,23 @@ data class StatsSnapshot(
     val last7Days: List<DayStat>
 )
 
-enum class Badge(val emoji: String, val title: String, val description: String, val unlocked: (StatsSnapshot) -> Boolean) {
-    FIRST_TASK("✅", "Khởi đầu", "Hoàn thành công việc đầu tiên", { it.tasksDone >= 1 }),
-    TASK_10("📋", "Chăm chỉ", "Hoàn thành 10 công việc", { it.tasksDone >= 10 }),
-    TASK_50("🏆", "Cỗ máy làm việc", "Hoàn thành 50 công việc", { it.tasksDone >= 50 }),
-    FIRST_FOCUS("⏱️", "Tập trung lần đầu", "Hoàn thành 1 phiên tập trung", { it.focusSessions >= 1 }),
-    FOCUS_60("📚", "Một giờ vàng", "Tổng cộng 60 phút tập trung", { it.totalFocusMinutes >= 60 }),
-    FOCUS_600("🧠", "Bậc thầy tập trung", "Tổng cộng 10 giờ tập trung", { it.totalFocusMinutes >= 600 }),
-    STREAK_3("🔥", "Giữ lửa", "Chuỗi 3 ngày liên tục", { it.bestStreak >= 3 }),
-    STREAK_7("🌟", "Cả tuần bền bỉ", "Chuỗi 7 ngày liên tục", { it.bestStreak >= 7 }),
-    LEVEL_5("🐱", "Sen chuyên nghiệp", "Nuôi thú cưng lên Level 5", { it.level >= 5 })
+/** Huy hiệu mở khóa theo số liệu; mở khóa xong bấm "Nhận" để lấy [rewardCoins] xu (một lần). */
+enum class Badge(
+    val emoji: String,
+    val title: String,
+    val description: String,
+    val rewardCoins: Int,
+    val unlocked: (StatsSnapshot) -> Boolean
+) {
+    FIRST_TASK("✅", "Khởi đầu", "Hoàn thành công việc đầu tiên", 10, { it.tasksDone >= 1 }),
+    TASK_10("📋", "Chăm chỉ", "Hoàn thành 10 công việc", 50, { it.tasksDone >= 10 }),
+    TASK_50("🏆", "Cỗ máy làm việc", "Hoàn thành 50 công việc", 200, { it.tasksDone >= 50 }),
+    FIRST_FOCUS("⏱️", "Tập trung lần đầu", "Hoàn thành 1 phiên tập trung", 10, { it.focusSessions >= 1 }),
+    FOCUS_60("📚", "Một giờ vàng", "Tổng cộng 60 phút tập trung", 40, { it.totalFocusMinutes >= 60 }),
+    FOCUS_600("🧠", "Bậc thầy tập trung", "Tổng cộng 10 giờ tập trung", 200, { it.totalFocusMinutes >= 600 }),
+    STREAK_3("🔥", "Giữ lửa", "Chuỗi 3 ngày liên tục", 30, { it.bestStreak >= 3 }),
+    STREAK_7("🌟", "Cả tuần bền bỉ", "Chuỗi 7 ngày liên tục", 100, { it.bestStreak >= 7 }),
+    LEVEL_5("🐱", "Sen chuyên nghiệp", "Nuôi thú cưng lên Level 5", 100, { it.level >= 5 })
 }
 
 object StatsCalculator {

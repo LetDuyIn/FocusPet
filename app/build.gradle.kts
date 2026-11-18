@@ -44,6 +44,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation("androidx.test:rules:1.7.0")
+    androidTestImplementation("androidx.work:work-testing:2.11.2")
     // 1. Thư viện hoạt ảnh Lottie cho thú cưng
     implementation("com.airbnb.android:lottie:6.4.0")
 

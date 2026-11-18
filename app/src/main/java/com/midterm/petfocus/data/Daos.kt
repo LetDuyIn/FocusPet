@@ -42,6 +42,10 @@ interface TaskDao {
     @Delete
     suspend fun delete(task: Task)
 
+    /** Xóa việc kế tiếp (chưa làm) do một việc lặp lại sinh ra. */
+    @Query("DELETE FROM tasks WHERE parentId = :parentId AND isDone = 0")
+    suspend fun deletePendingChildren(parentId: Long)
+
     @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 1 AND completedAt >= :since")
     fun observeDoneSince(since: Long): Flow<Int>
 
@@ -53,6 +57,18 @@ interface TaskDao {
 
     @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 0 AND dueDate IS NOT NULL AND dueDate + 86400000 <= :now")
     suspend fun countOverdue(now: Long): Int
+}
+
+@Dao
+interface BadgeDao {
+    @Query("SELECT badgeId FROM badge_claims")
+    fun observeClaimed(): Flow<List<String>>
+
+    @Query("SELECT COUNT(*) FROM badge_claims WHERE badgeId = :id")
+    suspend fun isClaimed(id: String): Int
+
+    @Insert
+    suspend fun insert(claim: BadgeClaim)
 }
 
 @Dao

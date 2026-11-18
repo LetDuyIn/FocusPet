@@ -30,12 +30,10 @@ class PetViewModel(app: Application) : AndroidViewModel(app) {
     val ownedItems: StateFlow<List<OwnedItem>> = repo.ownedItems
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    /** Màu phông nền đang dùng cho ô hiển thị pet. */
-    val backgroundColor: StateFlow<String> = repo.ownedItems
-        .map { list ->
-            list.firstOrNull { it.equipped }?.let { ShopCatalog.find(it.itemId)?.color } ?: "#FFFFFF"
-        }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "#FFFFFF")
+    /** Màu phông nền đang dùng cho ô hiển thị pet; null = nền mặc định của giao diện. */
+    val backgroundColor: StateFlow<String?> = repo.ownedItems
+        .map { list -> list.firstOrNull { it.equipped }?.let { ShopCatalog.find(it.itemId)?.color } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val _reactions = MutableSharedFlow<PetReaction>(extraBufferCapacity = 4)
     val reactions: SharedFlow<PetReaction> = _reactions

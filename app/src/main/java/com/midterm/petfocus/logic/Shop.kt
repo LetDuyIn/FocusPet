@@ -33,7 +33,7 @@ object ShopCatalog {
         ShopItem("food_treat", "🍪", "Bánh thưởng", "Vui vẻ +25", 20, ItemType.FOOD, happiness = 25f),
         ShopItem("food_catnip", "🌿", "Cỏ mèo", "Vui vẻ +20, Sức lực +25", 30, ItemType.FOOD, happiness = 20f, energy = 25f),
         ShopItem("food_spa", "🧴", "Gói spa", "Sạch sẽ +60, Vui vẻ +10", 35, ItemType.FOOD, cleanliness = 60f, happiness = 10f),
-        ShopItem(DEFAULT_BACKGROUND, "🤍", "Nền trắng", "Phông nền mặc định", 0, ItemType.BACKGROUND, color = "#FFFFFF"),
+        ShopItem(DEFAULT_BACKGROUND, "🤍", "Nền trắng", "Phông nền mặc định (theo chế độ sáng/tối)", 0, ItemType.BACKGROUND, color = null),
         ShopItem("bg_garden", "🌱", "Vườn xanh", "Phông nền xanh mát", 80, ItemType.BACKGROUND, color = "#E3F6EC"),
         ShopItem("bg_sky", "☁️", "Bầu trời", "Phông nền xanh da trời", 120, ItemType.BACKGROUND, color = "#E0F2FE", minLevel = 2),
         ShopItem("bg_sunset", "🌅", "Hoàng hôn", "Phông nền cam ấm áp", 180, ItemType.BACKGROUND, color = "#FFE8D6", minLevel = 3),

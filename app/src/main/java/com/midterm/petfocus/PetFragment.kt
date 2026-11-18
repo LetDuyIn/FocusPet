@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.view.View
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -18,6 +19,7 @@ import com.midterm.petfocus.databinding.FragmentPetBinding
 import com.midterm.petfocus.logic.GameRules
 import com.midterm.petfocus.logic.Mood
 import com.midterm.petfocus.logic.PetAction
+import com.midterm.petfocus.ui.RewardFx
 import com.midterm.petfocus.ui.pet.PetReaction
 import com.midterm.petfocus.ui.pet.PetViewModel
 import com.midterm.petfocus.ui.pet.ShopSheet
@@ -31,6 +33,8 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
 
     private var binding: FragmentPetBinding? = null
     private var currentAnim: String? = null
+    /** Trạng thái pet lần hiển thị trước, để biết vừa nhận thêm bao nhiêu xu/EXP. */
+    private var lastShown: PetState? = null
     /** Đang hiện phản hồi của một hành động thì tạm không ghi đè lời thoại/animation theo tâm trạng. */
     private var reactionJob: Job? = null
 
@@ -63,7 +67,12 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
                 launch { vm.pet.collect { it?.let(::render) } }
                 launch { vm.reactions.collect(::showReaction) }
                 launch {
-                    vm.backgroundColor.collect { b.cardPetStage.setCardBackgroundColor(Color.parseColor(it)) }
+                    vm.backgroundColor.collect { hex ->
+                        b.cardPetStage.setCardBackgroundColor(
+                            hex?.let { Color.parseColor(it) }
+                                ?: ContextCompat.getColor(requireContext(), R.color.surface_white)
+                        )
+                    }
                 }
                 // Mỗi giây: cập nhật đếm ngược thời gian hồi của các nút
                 launch {
@@ -86,7 +95,7 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
     private fun render(p: PetState) {
         val b = binding ?: return
         b.tvPetLevel.text = "Level ${p.level} • ${p.name} 🐱"
-        b.tvCoins.text = "🪙 ${p.coins} Xu 🛒"
+        playRewardEffects(b, p)
         b.progressHunger.progress = p.hunger.toInt()
         b.progressHappiness.progress = p.happiness.toInt()
         b.progressEnergy.progress = p.energy.toInt()
@@ -104,6 +113,35 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
         renderButtons(p)
     }
 
+    /**
+     * So với lần hiển thị trước: xu thay đổi thì đếm số và hiện "+N 🪙" bay lên,
+     * EXP tăng thì hiện "+N EXP", lên cấp thì mèo nảy lên.
+     * Lần đầu mở màn hình chỉ hiện số, không chạy hiệu ứng.
+     */
+    private fun playRewardEffects(b: FragmentPetBinding, p: PetState) {
+        val prev = lastShown
+        lastShown = p
+        val coinText = { c: Int -> "🪙 $c Xu 🛒" }
+        if (prev == null) { b.tvCoins.text = coinText(p.coins); return }
+
+        val coinDelta = p.coins - prev.coins
+        RewardFx.countTo(b.tvCoins, prev.coins, p.coins, coinText)
+        if (coinDelta != 0) {
+            RewardFx.floatText(
+                b.tvCoins,
+                if (coinDelta > 0) "+$coinDelta 🪙" else "$coinDelta 🪙",
+                if (coinDelta > 0) R.color.reward_text else R.color.danger_text
+            )
+        }
+        val gainedExp = p.level > prev.level || p.exp > prev.exp
+        if (p.level > prev.level) {
+            RewardFx.bounce(b.lottiePet)
+            RewardFx.floatText(b.lottiePet, "⭐ LEVEL ${p.level}!", R.color.peach_dark)
+        } else if (gainedExp) {
+            RewardFx.floatText(b.progressExp, "+${p.exp - prev.exp} EXP", R.color.peach_dark)
+        }
+    }
+
     private fun renderButtons(p: PetState) {
         val now = System.currentTimeMillis()
         actionButtons.forEach { (action, btn) ->
@@ -111,7 +149,8 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
             btn.text = when {
                 left > 0 -> "${action.label}\n${(left + 999) / 1000}s"
                 action.cost > 0 -> "${action.label}\n${action.cost}🪙"
-                else -> action.label
+                // Luôn 2 dòng để 4 nút cao bằng nhau
+                else -> "${action.label}\nMiễn phí"
             }
             btn.alpha = if (left > 0 || p.coins < action.cost) 0.5f else 1f
         }
@@ -169,6 +208,7 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
     override fun onDestroyView() {
         binding = null
         reactionJob = null
+        lastShown = null
         super.onDestroyView()
     }
 }

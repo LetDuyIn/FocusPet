@@ -15,10 +15,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.midterm.petfocus.data.Difficulty
+import com.midterm.petfocus.data.Repeat
 import com.midterm.petfocus.data.Task
 import com.midterm.petfocus.databinding.DialogAddTaskBinding
 import com.midterm.petfocus.databinding.FragmentTasksBinding
 import com.midterm.petfocus.logic.GameRules
+import com.midterm.petfocus.ui.RewardFx
 import com.midterm.petfocus.ui.tasks.TaskAdapter
 import com.midterm.petfocus.ui.tasks.TaskFilter
 import com.midterm.petfocus.ui.tasks.TasksViewModel
@@ -37,8 +39,26 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
         val b = FragmentTasksBinding.bind(view)
         binding = b
 
-        val adapter = TaskAdapter(
-            onComplete = { vm.complete(it) },
+        lateinit var adapter: TaskAdapter
+        adapter = TaskAdapter(
+            onComplete = { task, anchor ->
+                val (coins, _) = GameRules.taskReward(task, System.currentTimeMillis())
+                RewardFx.floatText(anchor, "+$coins 🪙")
+                vm.complete(task)
+            },
+            onUncheck = { task ->
+                // Hỏi lại trước khi trừ thưởng; bấm Hủy thì vẽ lại để checkbox tick trở lại
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Bỏ đánh dấu hoàn thành?")
+                    .setMessage(
+                        "Sẽ trừ lại ${task.coinsEarned} xu và ${task.expEarned} EXP đã nhận." +
+                            if (task.repeat.days > 0) "\nViệc lặp kế tiếp (nếu chưa làm) cũng bị xóa." else ""
+                    )
+                    .setNegativeButton("Hủy") { _, _ -> adapter.notifyItemChanged(adapter.currentList.indexOf(task)) }
+                    .setOnCancelListener { adapter.notifyItemChanged(adapter.currentList.indexOf(task)) }
+                    .setPositiveButton("Bỏ đánh dấu") { _, _ -> vm.uncomplete(task) }
+                    .show()
+            },
             onEdit = { showTaskDialog(it) },
             onDelete = { deleteWithUndo(it) }
         )
@@ -113,6 +133,18 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
             }
         )
         d.toggleDifficulty.addOnButtonCheckedListener { _, _, _ -> refresh() }
+        d.toggleRepeat.check(
+            when (task?.repeat ?: Repeat.NONE) {
+                Repeat.NONE -> R.id.btn_repeat_none
+                Repeat.DAILY -> R.id.btn_repeat_daily
+                Repeat.WEEKLY -> R.id.btn_repeat_weekly
+            }
+        )
+        fun selectedRepeat() = when (d.toggleRepeat.checkedButtonId) {
+            R.id.btn_repeat_daily -> Repeat.DAILY
+            R.id.btn_repeat_weekly -> Repeat.WEEKLY
+            else -> Repeat.NONE
+        }
         d.btnClearDue.setOnClickListener { dueDate = null; refresh() }
         d.btnPickDue.setOnClickListener {
             val cal = Calendar.getInstance().apply { dueDate?.let { timeInMillis = it } }
@@ -141,7 +173,10 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
                 return@setOnClickListener
             }
             val base = task ?: Task(title = title)
-            vm.save(base.copy(title = title, difficulty = selectedDifficulty(), dueDate = dueDate))
+            val repeat = selectedRepeat()
+            // Việc lặp lại mà chưa chọn hạn thì lấy hạn là hôm nay
+            val due = dueDate ?: if (repeat != Repeat.NONE) GameRules.startOfDay(System.currentTimeMillis()) else null
+            vm.save(base.copy(title = title, difficulty = selectedDifficulty(), dueDate = due, repeat = repeat))
             dialog.dismiss()
         }
     }

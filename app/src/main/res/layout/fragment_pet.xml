@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<!-- Cuộn được để không mất hàng nút trên điện thoại màn hình nhỏ -->
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:fillViewport="true"
     android:background="@color/bg_cream">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/pet_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
 
     <!-- Header: Level Pet và Tiền Xu -->
     <com.google.android.material.card.MaterialCardView
@@ -29,7 +36,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Level 2 • Mimi 🐱"
+                android:text="@string/tv_pet_level"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
@@ -38,7 +45,7 @@
                 android:id="@+id/tv_coins"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🪙 120 Xu"
+                android:text="@string/tv_coins"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -81,7 +88,7 @@
                 android:id="@+id/tv_pet_dialogue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Meow! Sen làm bài tập LTDD chưa?"
+                android:text="@string/tv_pet_dialogue"
                 android:textColor="@color/text_primary"
                 android:textSize="13sp"
                 android:background="@drawable/bg_speech_bubble"
@@ -112,7 +119,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="🍎 No bụng:"
+                android:text="@string/fragment_pet_text"
                 android:textSize="13sp"
                 android:textColor="@color/text_primary" />
             <ProgressBar
@@ -132,7 +139,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="💖 Vui vẻ:"
+                android:text="@string/fragment_pet_text_2"
                 android:textSize="13sp"
                 android:textColor="@color/text_primary" />
             <ProgressBar
@@ -153,7 +160,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="⚡ Sức lực:"
+                android:text="@string/fragment_pet_text_3"
                 android:textSize="13sp"
                 android:textColor="@color/text_primary" />
             <ProgressBar
@@ -174,7 +181,7 @@
             <TextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="🛁 Sạch sẽ:"
+                android:text="@string/fragment_pet_text_4"
                 android:textSize="13sp"
                 android:textColor="@color/text_primary" />
             <ProgressBar
@@ -196,7 +203,7 @@
                 android:id="@+id/tv_exp"
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="⭐ 0/100"
+                android:text="@string/tv_exp"
                 android:textSize="13sp"
                 android:textColor="@color/text_primary" />
             <ProgressBar
@@ -224,11 +231,11 @@
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Cho ăn"
+            android:text="@string/btn_feed"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#FF9F6B" />
+            android:backgroundTint="@color/peach" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_cuddle"
@@ -236,11 +243,11 @@
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Nựng"
+            android:text="@string/btn_cuddle"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#6BCB9F" />
+            android:backgroundTint="@color/mint" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_clean"
@@ -248,11 +255,11 @@
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Tắm"
+            android:text="@string/btn_clean"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#38BDF8" />
+            android:backgroundTint="@color/sky" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_sleep"
@@ -260,11 +267,12 @@
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Ngủ"
+            android:text="@string/btn_sleep"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#818CF8" />
+            android:backgroundTint="@color/indigo" />
     </GridLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

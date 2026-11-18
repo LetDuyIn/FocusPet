@@ -5,7 +5,7 @@ import com.midterm.petfocus.data.Task
 import java.util.Calendar
 
 /** Tâm trạng của pet, quyết định animation và lời thoại. */
-enum class Mood { HAPPY, NORMAL, HUNGRY, SAD, SLEEPY, DIRTY }
+enum class Mood { HAPPY, NORMAL, HUNGRY, SAD, SLEEPY, DIRTY, ANGRY }
 
 /** Các hành động chăm sóc pet: giá xu, thời gian hồi và EXP nhận được. */
 enum class PetAction(val label: String, val cost: Int, val cooldownMs: Long, val exp: Int) {
@@ -41,13 +41,23 @@ object GameRules {
 
     private fun clamp(v: Float) = v.coerceIn(0f, MAX_STAT)
 
-    /** Trừ chỉ số theo thời gian đã trôi qua kể từ lần cập nhật cuối. */
+    /** Khi bị bỏ đói (No bụng = 0), Vui vẻ giảm nhanh gấp mấy lần bình thường. */
+    const val STARVING_HAPPINESS_MULTIPLIER = 3f
+    /** Mèo giận dỗi thì chỉ nhận được phần này của EXP. */
+    const val ANGRY_EXP_MULTIPLIER = 0.5f
+
+    /**
+     * Trừ chỉ số theo thời gian đã trôi qua kể từ lần cập nhật cuối.
+     * Phạt bỏ bê: khoảng thời gian No bụng đã về 0 thì Vui vẻ giảm nhanh gấp 3.
+     */
     fun applyDecay(p: PetState, now: Long): PetState {
         val hours = (now - p.lastUpdated).coerceAtLeast(0) / 3_600_000f
         if (hours <= 0f) return p
+        val starvingHours = (hours - p.hunger / HUNGER_PER_HOUR).coerceAtLeast(0f)
+        val happinessLoss = HAPPINESS_PER_HOUR * (hours + starvingHours * (STARVING_HAPPINESS_MULTIPLIER - 1))
         return p.copy(
             hunger = clamp(p.hunger - HUNGER_PER_HOUR * hours),
-            happiness = clamp(p.happiness - HAPPINESS_PER_HOUR * hours),
+            happiness = clamp(p.happiness - happinessLoss),
             energy = clamp(p.energy - ENERGY_PER_HOUR * hours),
             cleanliness = clamp(p.cleanliness - CLEAN_PER_HOUR * hours),
             lastUpdated = now
@@ -68,6 +78,41 @@ object GameRules {
         }
         val happiness = if (gained > 0) MAX_STAT else p.happiness
         return p.copy(level = level, exp = e, coins = coins, happiness = happiness) to gained
+    }
+
+    /**
+     * Trừ EXP khi bỏ tick một việc đã xong. Có thể tụt cấp; tụt cấp nào thì
+     * thu hồi luôn số xu thưởng của cấp đó, để tick/bỏ tick liên tục không kiếm thêm được gì.
+     */
+    fun removeExp(p: PetState, exp: Int): PetState {
+        var level = p.level
+        var e = p.exp - exp
+        var coins = p.coins
+        while (e < 0 && level > 1) {
+            coins -= LEVEL_UP_BONUS_PER_LEVEL * level
+            level--
+            e += expToNext(level)
+        }
+        return p.copy(level = level, exp = e.coerceAtLeast(0), coins = coins.coerceAtLeast(0))
+    }
+
+    /** Mèo giận dỗi (bị bỏ đói tới mức buồn hẳn) thì chỉ nhận nửa EXP. */
+    fun applyExpMultiplier(p: PetState, exp: Int): Int =
+        if (mood(p) == Mood.ANGRY) (exp * ANGRY_EXP_MULTIPLIER).toInt() else exp
+
+    /**
+     * Hạn của lần lặp kế tiếp: tính từ hạn cũ (hoặc hôm nay nếu không có hạn);
+     * nếu làm trễ thì tính từ hôm nay để việc mới không bị quá hạn ngay.
+     */
+    fun nextDueDate(task: Task, now: Long): Long? {
+        if (task.repeat.days == 0) return null
+        val today = startOfDay(now)
+        val base = maxOf(task.dueDate ?: today, today)
+        return Calendar.getInstance().run {
+            timeInMillis = base
+            add(Calendar.DAY_OF_YEAR, task.repeat.days)
+            startOfDay(timeInMillis)
+        }
     }
 
     fun isOverdue(task: Task, now: Long): Boolean =
@@ -99,6 +144,8 @@ object GameRules {
     fun checkAction(p: PetState, action: PetAction, now: Long): String? {
         val left = cooldownLeft(p, action, now)
         return when {
+            mood(p) == Mood.ANGRY && action != PetAction.FEED ->
+                "${p.name} đang giận dỗi vì bị bỏ đói! Cho ăn trước đã 😾"
             left > 0 -> "${p.name} cần nghỉ thêm ${(left + 999) / 1000} giây nữa."
             p.coins < action.cost -> "Không đủ xu! Cần ${action.cost} xu, hãy làm thêm việc nhé."
             action == PetAction.FEED && p.hunger >= 95f -> "${p.name} no căng bụng rồi!"
@@ -131,6 +178,7 @@ object GameRules {
     }
 
     fun mood(p: PetState): Mood = when {
+        p.hunger <= 0f && p.happiness <= 0f -> Mood.ANGRY
         p.energy < 25f -> Mood.SLEEPY
         p.hunger < 30f -> Mood.HUNGRY
         p.happiness < 30f -> Mood.SAD
@@ -140,6 +188,7 @@ object GameRules {
     }
 
     fun dialogue(p: PetState): String = when (mood(p)) {
+        Mood.ANGRY -> "Hứ! Bỏ đói ${p.name} lâu thế! Không chơi nữa 😾 (chỉ nhận nửa EXP tới khi được cho ăn)"
         Mood.SLEEPY -> "Buồn ngủ quá... cho ${p.name} ngủ một chút nha 😪"
         Mood.HUNGRY -> "Sen ơi, đói quá... cho ăn đi mà 🥺"
         Mood.SAD -> "${p.name} buồn... Sen nựng ${p.name} với 😿"

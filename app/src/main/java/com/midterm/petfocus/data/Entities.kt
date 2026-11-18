@@ -1,5 +1,6 @@
 package com.midterm.petfocus.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -11,6 +12,13 @@ enum class Difficulty(val label: String, val coins: Int, val exp: Int) {
 }
 
 enum class SessionStatus { COMPLETED, FAILED, CANCELLED }
+
+/** Việc lặp lại: làm xong thì tự tạo việc mới cho ngày/tuần kế tiếp. */
+enum class Repeat(val label: String, val days: Int) {
+    NONE("Không lặp", 0),
+    DAILY("Hằng ngày", 1),
+    WEEKLY("Hằng tuần", 7)
+}
 
 /** Trạng thái thú cưng và ví xu. Bảng này luôn chỉ có 1 dòng (id = 1). */
 @Entity(tableName = "pet")
@@ -42,7 +50,17 @@ data class Task(
     val completedAt: Long? = null,
     val coinsEarned: Int = 0,
     val expEarned: Int = 0,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    @ColumnInfo(defaultValue = "NONE") val repeat: Repeat = Repeat.NONE,
+    /** Id của việc lặp lại đã sinh ra việc này (để bỏ tick thì xóa luôn việc kế tiếp). */
+    val parentId: Long? = null
+)
+
+/** Huy hiệu đã nhận thưởng, để mỗi huy hiệu chỉ nhận xu một lần. */
+@Entity(tableName = "badge_claims")
+data class BadgeClaim(
+    @PrimaryKey val badgeId: String,
+    val claimedAt: Long
 )
 
 /** Vật phẩm đã mua và giữ lâu dài (hiện tại là phông nền cho pet). */
