@@ -61,4 +61,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
     implementation("androidx.fragment:fragment-ktx:1.8.9")
+
+    // 5. WorkManager: chạy nền định kỳ để gửi thông báo nhắc nhở
+    implementation("androidx.work:work-runtime-ktx:2.11.2")
 }

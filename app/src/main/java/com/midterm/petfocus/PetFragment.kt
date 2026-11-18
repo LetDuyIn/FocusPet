@@ -1,5 +1,6 @@
 package com.midterm.petfocus
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.InputFilter
 import android.view.View
@@ -19,6 +20,7 @@ import com.midterm.petfocus.logic.Mood
 import com.midterm.petfocus.logic.PetAction
 import com.midterm.petfocus.ui.pet.PetReaction
 import com.midterm.petfocus.ui.pet.PetViewModel
+import com.midterm.petfocus.ui.pet.ShopSheet
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,11 +51,20 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
 
         b.tvPetLevel.setOnLongClickListener { showRenameDialog(); true }
         b.cardPetStage.setOnClickListener { vm.act(PetAction.CUDDLE) }
+        // Bấm vào ô xu để mở cửa hàng
+        b.tvCoins.setOnClickListener {
+            if (childFragmentManager.findFragmentByTag(ShopSheet.TAG) == null) {
+                ShopSheet().show(childFragmentManager, ShopSheet.TAG)
+            }
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { vm.pet.collect { it?.let(::render) } }
                 launch { vm.reactions.collect(::showReaction) }
+                launch {
+                    vm.backgroundColor.collect { b.cardPetStage.setCardBackgroundColor(Color.parseColor(it)) }
+                }
                 // Mỗi giây: cập nhật đếm ngược thời gian hồi của các nút
                 launch {
                     while (true) {
@@ -75,7 +86,7 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
     private fun render(p: PetState) {
         val b = binding ?: return
         b.tvPetLevel.text = "Level ${p.level} • ${p.name} 🐱"
-        b.tvCoins.text = "🪙 ${p.coins} Xu"
+        b.tvCoins.text = "🪙 ${p.coins} Xu 🛒"
         b.progressHunger.progress = p.hunger.toInt()
         b.progressHappiness.progress = p.happiness.toInt()
         b.progressEnergy.progress = p.energy.toInt()
@@ -109,9 +120,7 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
     private fun showReaction(r: PetReaction) {
         val b = binding ?: return
         b.tvPetDialogue.text = r.text
-        if (r.success) {
-            playAnim(if (r.action == PetAction.SLEEP) "pet_sleep.json" else "pet_happy.json")
-        }
+        r.anim?.let(::playAnim)
         if (r.levelUp) {
             val p = vm.pet.value
             Snackbar.make(

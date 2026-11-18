@@ -2,9 +2,14 @@ package com.midterm.petfocus.data
 
 import androidx.room.withTransaction
 import com.midterm.petfocus.logic.GameRules
+import com.midterm.petfocus.logic.ItemType
 import com.midterm.petfocus.logic.PetAction
 import com.midterm.petfocus.logic.Reward
+import com.midterm.petfocus.logic.ShopCatalog
+import com.midterm.petfocus.logic.StatsCalculator
+import com.midterm.petfocus.logic.StatsSnapshot
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 
 sealed class ActionResult {
@@ -20,6 +25,7 @@ class GameRepository(private val db: AppDatabase) {
     private val petDao = db.petDao()
     private val taskDao = db.taskDao()
     private val focusDao = db.focusDao()
+    private val ownedDao = db.ownedItemDao()
 
     private fun now() = System.currentTimeMillis()
     private fun today() = GameRules.startOfDay(now())
@@ -84,6 +90,60 @@ class GameRepository(private val db: AppDatabase) {
 
     /** Hoàn tác xóa: thêm lại đúng task cũ (giữ nguyên id). */
     suspend fun restoreTask(task: Task) { taskDao.insert(task) }
+
+    // ---------- Cửa hàng ----------
+    val ownedItems: Flow<List<OwnedItem>> = ownedDao.observeAll()
+
+    /** Mua đồ ăn (dùng ngay) hoặc phông nền (giữ lại và dùng luôn). */
+    suspend fun buy(itemId: String): ActionResult = db.withTransaction {
+        val item = ShopCatalog.find(itemId) ?: return@withTransaction ActionResult.Failure("Không tìm thấy món này.")
+        val pet = loadPet(now())
+        val reason = when {
+            pet.level < item.minLevel -> "Cần đạt Level ${item.minLevel} để mua ${item.name}."
+            item.type == ItemType.BACKGROUND && ownedDao.get(item.id) != null -> "Bạn đã có ${item.name} rồi."
+            pet.coins < item.price -> "Không đủ xu! Cần ${item.price} xu."
+            else -> null
+        }
+        if (reason != null) return@withTransaction ActionResult.Failure(reason)
+
+        val paid = pet.copy(coins = pet.coins - item.price)
+        when (item.type) {
+            ItemType.FOOD -> {
+                petDao.upsert(ShopCatalog.applyFood(paid, item))
+                ActionResult.Success("${item.emoji} Măm măm! ${pet.name} thích ${item.name} lắm!", 0)
+            }
+            ItemType.BACKGROUND -> {
+                petDao.upsert(paid)
+                ownedDao.insert(OwnedItem(item.id))
+                ownedDao.equipOnly(item.id)
+                ActionResult.Success("Đã mua và dùng phông nền ${item.name} ${item.emoji}", 0)
+            }
+        }
+    }
+
+    suspend fun equipBackground(itemId: String) = db.withTransaction {
+        if (itemId == ShopCatalog.DEFAULT_BACKGROUND && ownedDao.get(itemId) == null) {
+            ownedDao.insert(OwnedItem(itemId))
+        }
+        if (ownedDao.get(itemId) != null) ownedDao.equipOnly(itemId)
+    }
+
+    // ---------- Thống kê ----------
+    val stats: Flow<StatsSnapshot> = combine(
+        focusDao.observeCompleted(),
+        taskDao.observeCompletedTimes(),
+        focusDao.observeFailedCount(),
+        pet
+    ) { sessions, taskTimes, failed, p ->
+        StatsCalculator.build(sessions, taskTimes, failed, p.level, now())
+    }
+
+    // ---------- Nhắc nhở ----------
+    suspend fun currentPet(): PetState = db.withTransaction {
+        loadPet(now()).also { petDao.upsert(it) }
+    }
+
+    suspend fun overdueCount(): Int = taskDao.countOverdue(now())
 
     // ---------- Tập trung ----------
     fun focusMinutesToday(): Flow<Int> = focusDao.observeMinutesSince(today())

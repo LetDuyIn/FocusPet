@@ -1,10 +1,20 @@
 package com.midterm.petfocus
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
+import android.text.InputFilter
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.midterm.petfocus.ui.focus.FocusResult
 import com.midterm.petfocus.ui.focus.FocusViewModel
+import com.midterm.petfocus.reminder.Reminders
 import com.midterm.petfocus.ui.pet.PetViewModel
 import kotlinx.coroutines.launch
 
@@ -25,6 +36,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        // Android mới vẽ app tràn lên cả thanh trạng thái: đẩy nội dung xuống dưới để không bị đè
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.nav_host_fragment)) { v, insets ->
+            v.updatePadding(top = insets.getInsets(WindowInsetsCompat.Type.systemBars()).top)
+            insets
+        }
 
         // Mặc định mở màn hình Thú cưng đầu tiên
         if (savedInstanceState == null) {
@@ -44,6 +61,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_focus -> {
                     loadFragment(FocusFragment())
+                    true
+                }
+                R.id.nav_stats -> {
+                    loadFragment(StatsFragment())
                     true
                 }
                 else -> false
@@ -66,12 +87,55 @@ class MainActivity : AppCompatActivity() {
             lifecycleScope.launch { focusVm.state.collect { cb.isEnabled = it.running } }
         })
 
+        if (savedInstanceState == null) showOnboardingIfNeeded()
+
         // Hiện kết quả phiên tập trung dù đang ở tab nào
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 focusVm.result.collect { result -> result?.let(::showFocusResult) }
             }
         }
+    }
+
+    private val notificationPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            if (!granted) {
+                Toast.makeText(this, "Bạn có thể bật thông báo sau trong Cài đặt.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    /** Lần đầu mở app: chào mừng, đặt tên mèo, rồi xin quyền gửi thông báo nhắc nhở. */
+    private fun showOnboardingIfNeeded() {
+        val prefs = getSharedPreferences("app", MODE_PRIVATE)
+        if (prefs.getBoolean("onboarded", false)) return
+
+        val pad = (20 * resources.displayMetrics.density).toInt()
+        val input = EditText(this).apply {
+            hint = "Ví dụ: Mimi"
+            setText("Mimi")
+            setSelection(text.length)
+            filters = arrayOf(InputFilter.LengthFilter(20))
+        }
+        val container = FrameLayout(this).apply {
+            setPadding(pad, 0, pad, 0)
+            addView(input)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Chào mừng đến FocusPet! 🐾")
+            .setMessage(
+                "Làm xong việc và tập trung không dùng điện thoại để kiếm xu, nuôi mèo lớn lên.\n\n" +
+                    "Hãy đặt tên cho bé mèo của bạn:"
+            )
+            .setView(container)
+            .setCancelable(false)
+            .setPositiveButton("Bắt đầu") { _, _ ->
+                petVm.rename(input.text.toString().ifBlank { "Mimi" })
+                prefs.edit().putBoolean("onboarded", true).apply()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !Reminders.canNotify(this)) {
+                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+            .show()
     }
 
     private fun showFocusResult(result: FocusResult) {

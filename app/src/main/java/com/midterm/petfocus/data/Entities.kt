@@ -45,6 +45,13 @@ data class Task(
     val createdAt: Long = System.currentTimeMillis()
 )
 
+/** Vật phẩm đã mua và giữ lâu dài (hiện tại là phông nền cho pet). */
+@Entity(tableName = "owned_items")
+data class OwnedItem(
+    @PrimaryKey val itemId: String,
+    val equipped: Boolean = false
+)
+
 @Entity(tableName = "focus_sessions")
 data class FocusSession(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
