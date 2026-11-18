@@ -15,6 +15,24 @@ enum class PetAction(val label: String, val cost: Int, val cooldownMs: Long, val
     SLEEP("Ngủ", 0, 180_000, 2)
 }
 
+/**
+ * Giai đoạn trưởng thành của mèo theo cấp. Mèo to dần ([scale]) và đeo phụ kiện mới.
+ * Phụ kiện là hình art_bow / art_gradcap / art_crown (gán ở tầng giao diện).
+ */
+enum class GrowthStage(val label: String, val minLevel: Int, val scale: Float) {
+    KITTEN("Mèo con", 1, 0.72f),
+    JUNIOR("Mèo nhỡ", 3, 0.84f),
+    ADULT("Mèo trưởng thành", 6, 0.94f),
+    ROYAL("Mèo hoàng gia", 10, 1.0f);
+
+    /** Giai đoạn kế tiếp, null nếu đã lớn nhất. */
+    val next: GrowthStage? get() = entries.getOrNull(ordinal + 1)
+
+    companion object {
+        fun of(level: Int): GrowthStage = entries.last { level >= it.minLevel }
+    }
+}
+
 data class Reward(val coins: Int, val exp: Int, val levelsGained: Int = 0)
 
 /**

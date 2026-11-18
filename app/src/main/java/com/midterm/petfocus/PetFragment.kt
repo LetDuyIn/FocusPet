@@ -16,7 +16,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.midterm.petfocus.data.PetState
 import com.midterm.petfocus.databinding.FragmentPetBinding
+import androidx.core.view.isVisible
 import com.midterm.petfocus.logic.GameRules
+import com.midterm.petfocus.logic.GrowthStage
 import com.midterm.petfocus.logic.Mood
 import com.midterm.petfocus.logic.PetAction
 import com.midterm.petfocus.ui.RewardFx
@@ -96,6 +98,7 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
     private fun render(p: PetState) {
         val b = binding ?: return
         b.tvPetLevel.text = "Level ${p.level} • ${p.name} 🐱"
+        renderGrowth(b, p)
         playRewardEffects(b, p)
         b.progressHunger.progress = p.hunger.toInt()
         b.progressHappiness.progress = p.happiness.toInt()
@@ -112,6 +115,37 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
             playAnim(animForMood(GameRules.mood(p)))
         }
         renderButtons(p)
+    }
+
+    /**
+     * Mèo lớn dần theo cấp: đổi kích thước và phụ kiện trên đầu.
+     * Phụ kiện được đặt theo vị trí đỉnh đầu mèo trong animation (đo trên pet_idle):
+     * khung Lottie 220dp, đỉnh đầu cách tâm khung 70dp khi mèo ở kích thước đầy đủ.
+     */
+    private fun renderGrowth(b: FragmentPetBinding, p: PetState) {
+        val stage = GrowthStage.of(p.level)
+        val s = stage.scale
+        b.lottiePet.scaleX = s
+        b.lottiePet.scaleY = s
+
+        val accessory = when (stage) {
+            GrowthStage.KITTEN -> null
+            GrowthStage.JUNIOR -> R.drawable.art_bow
+            GrowthStage.ADULT -> R.drawable.art_gradcap
+            GrowthStage.ROYAL -> R.drawable.art_crown
+        }
+        b.ivAccessory.isVisible = accessory != null
+        accessory?.let { b.ivAccessory.setImageResource(it) }
+        val dp = resources.displayMetrics.density
+        val headTop = (110 - 70 * s) * dp        // đỉnh đầu, tính từ mép trên khung Lottie
+        val size = 60 * dp
+        b.ivAccessory.scaleX = s
+        b.ivAccessory.scaleY = s
+        b.ivAccessory.translationY = headTop - size * 0.75f
+
+        b.tvStage.text = stage.next?.let {
+            "${stage.label} • còn ${it.minLevel - p.level} cấp nữa để thành ${it.label}"
+        } ?: "👑 ${stage.label} • đã lớn hết cỡ!"
     }
 
     /**
@@ -135,7 +169,18 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
             )
         }
         val gainedExp = p.level > prev.level || p.exp > prev.exp
-        if (p.level > prev.level) {
+        val newStage = GrowthStage.of(p.level)
+        if (newStage.ordinal > GrowthStage.of(prev.level).ordinal) {
+            // Lớn lên giai đoạn mới: nảy lên, hiện phụ kiện mới và báo cho người chơi
+            RewardFx.bounce(b.lottiePet)
+            RewardFx.bounce(b.ivAccessory)
+            RewardFx.floatText(b.lottiePet, "🎉 ${newStage.label}!", R.color.peach_dark)
+            Snackbar.make(
+                b.root,
+                ArtIcons.art(requireContext(), "🎉 ${p.name} đã lớn thành ${newStage.label}! Có phụ kiện mới rồi nè ✨")!!,
+                Snackbar.LENGTH_LONG
+            ).show()
+        } else if (p.level > prev.level) {
             RewardFx.bounce(b.lottiePet)
             RewardFx.floatText(b.lottiePet, "⭐ LEVEL ${p.level}!", R.color.peach_dark)
         } else if (gainedExp) {

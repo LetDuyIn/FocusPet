@@ -46,14 +46,19 @@ object RewardFx {
         }
     }
 
-    /** Nảy lên một nhịp, dùng khi pet lên cấp. */
+    /**
+     * Nảy lên một nhịp, dùng khi pet lên cấp. Giữ nguyên kích thước và vị trí hiện tại
+     * của view (mèo có thể đang được thu nhỏ theo giai đoạn trưởng thành).
+     */
     fun bounce(view: View) {
         view.animate().cancel()
-        view.scaleX = 1f; view.scaleY = 1f
-        view.animate().scaleX(1.25f).scaleY(1.25f).translationY(-30 * view.resources.displayMetrics.density)
+        val baseScale = view.scaleX
+        val baseY = view.translationY
+        view.animate().scaleX(baseScale * 1.25f).scaleY(baseScale * 1.25f)
+            .translationY(baseY - 30 * view.resources.displayMetrics.density)
             .setDuration(220)
             .withEndAction {
-                view.animate().scaleX(1f).scaleY(1f).translationY(0f)
+                view.animate().scaleX(baseScale).scaleY(baseScale).translationY(baseY)
                     .setDuration(500).setInterpolator(OvershootInterpolator(3f)).start()
             }
             .start()

@@ -83,6 +83,29 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+            <!-- Phụ kiện theo giai đoạn trưởng thành (nơ / mũ tốt nghiệp / vương miện), đặt trên đầu mèo -->
+            <ImageView
+                android:id="@+id/iv_accessory"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/accessory_desc"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/lottie_pet"
+                app:layout_constraintStart_toStartOf="@id/lottie_pet"
+                app:layout_constraintEnd_toEndOf="@id/lottie_pet" />
+
+            <!-- Giai đoạn trưởng thành hiện tại và cấp cần để lớn tiếp -->
+            <com.midterm.petfocus.ui.art.ArtTextView
+                android:id="@+id/tv_stage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <!-- Bong bóng lời thoại của Pet -->
             <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_pet_dialogue"

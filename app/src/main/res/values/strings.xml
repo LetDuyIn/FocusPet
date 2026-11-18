@@ -53,6 +53,9 @@
     <string name="nav_focus">Tập trung</string>
     <string name="nav_stats">Thống kê</string>
 
+    <!-- Mèo lớn dần -->
+    <string name="accessory_desc">Phụ kiện của thú cưng</string>
+
     <!-- Pomodoro -->
     <string name="btn_preset_custom">Khác</string>
 
