@@ -29,14 +29,71 @@
         app:layout_constraintTop_toBottomOf="@id/tv_title_tasks"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <!-- Bộ lọc danh sách -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chip_filters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:checkedChip="@id/chip_all"
+        app:layout_constraintTop_toBottomOf="@id/tv_tasks_summary">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_all"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tất cả" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_todo"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chưa xong" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_overdue"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quá hạn" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_done"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Đã xong" />
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- Hiện khi danh sách trống -->
+    <TextView
+        android:id="@+id/tv_empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Chưa có việc nào 🐾\nBấm “Thêm việc” để bắt đầu kiếm xu nhé!"
+        android:textColor="#8A87A0"
+        android:textSize="14sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/chip_filters"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <!-- RecyclerView danh sách công việc -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_tasks"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="88dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/tv_tasks_summary"
+        app:layout_constraintTop_toBottomOf="@id/chip_filters"
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <!-- Nút thêm công việc dạng FAB -->
