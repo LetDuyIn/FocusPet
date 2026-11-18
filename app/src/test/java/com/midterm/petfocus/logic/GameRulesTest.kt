@@ -188,6 +188,25 @@ class GameRulesTest {
         assertEquals(40, GameRules.applyExpMultiplier(pet(), 40))
     }
 
+    // ---------- Mèo lớn dần ----------
+
+    @Test fun growthStage_theoCap() {
+        assertEquals(GrowthStage.KITTEN, GrowthStage.of(1))
+        assertEquals(GrowthStage.KITTEN, GrowthStage.of(2))
+        assertEquals(GrowthStage.JUNIOR, GrowthStage.of(3))
+        assertEquals(GrowthStage.JUNIOR, GrowthStage.of(5))
+        assertEquals(GrowthStage.ADULT, GrowthStage.of(6))
+        assertEquals(GrowthStage.ROYAL, GrowthStage.of(10))
+        assertEquals(GrowthStage.ROYAL, GrowthStage.of(99))
+        assertEquals(GrowthStage.JUNIOR, GrowthStage.KITTEN.next)
+        assertNull(GrowthStage.ROYAL.next)
+    }
+
+    @Test fun growthStage_toDanTheoGiaiDoan() {
+        val scales = GrowthStage.entries.map { it.scale }
+        assertEquals(scales.sorted(), scales)
+    }
+
     // ---------- Pomodoro ----------
 
     @Test fun breakMinutes_nghiNganNghiDai() {
