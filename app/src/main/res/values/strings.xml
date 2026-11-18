@@ -1,3 +1,80 @@
 <resources>
     <string name="app_name">PetFocus</string>
+
+    <!-- Chữ hiển thị trong layout (tự gom từ các file layout và menu) -->
+    <string name="bottom_sheet_shop_text">Cửa hàng 🛒</string>
+    <string name="tv_shop_message">Đồ ăn dùng ngay khi mua. Phông nền mua một lần, dùng mãi.</string>
+    <string name="til_title_hint">Tên công việc</string>
+    <string name="dialog_add_task_text">Độ khó (càng khó thưởng càng nhiều)</string>
+    <string name="btn_easy">Dễ</string>
+    <string name="btn_medium">Vừa</string>
+    <string name="btn_hard">Khó</string>
+    <string name="tv_due">Không có hạn chót</string>
+    <string name="btn_clear_due">Bỏ hạn</string>
+    <string name="btn_pick_due">Chọn hạn</string>
+    <string name="tv_focus_header">Khóa Tập Trung ⏱️</string>
+    <string name="tv_focus_desc">Tập trung không mở điện thoại để nuôi pet lớn nhanh!</string>
+    <string name="tv_timer_countdown">25:00</string>
+    <string name="tv_session_status">Mèo Mimi đang ngồi học cùng bạn</string>
+    <string name="btn_preset_15">15 phút</string>
+    <string name="btn_preset_25">25 phút</string>
+    <string name="btn_preset_45">45 phút</string>
+    <string name="btn_start_focus">Bắt đầu tập trung</string>
+    <string name="tv_pet_level">Level 2 • Mimi 🐱</string>
+    <string name="tv_coins">🪙 120 Xu</string>
+    <string name="tv_pet_dialogue">Meow! Sen làm bài tập LTDD chưa?</string>
+    <string name="fragment_pet_text">🍎 No bụng:</string>
+    <string name="fragment_pet_text_2">💖 Vui vẻ:</string>
+    <string name="fragment_pet_text_3">⚡ Sức lực:</string>
+    <string name="fragment_pet_text_4">🛁 Sạch sẽ:</string>
+    <string name="tv_exp">⭐ 0/100</string>
+    <string name="btn_feed">Cho ăn</string>
+    <string name="btn_cuddle">Nựng</string>
+    <string name="btn_clean">Tắm</string>
+    <string name="btn_sleep">Ngủ</string>
+    <string name="fragment_stats_text">Thống kê 📊</string>
+    <string name="tv_stats_subtitle">Giữ chuỗi mỗi ngày để mở khóa huy hiệu!</string>
+    <string name="fragment_stats_text_2">Phút tập trung 7 ngày qua</string>
+    <string name="tv_badges_title">Huy hiệu</string>
+    <string name="tv_title_tasks">Nhiệm vụ hôm nay ✨</string>
+    <string name="tv_tasks_summary">Hoàn thành task để nhận xu và nuôi thú cưng mau lớn!</string>
+    <string name="chip_all">Tất cả</string>
+    <string name="chip_todo">Chưa xong</string>
+    <string name="chip_overdue">Quá hạn</string>
+    <string name="chip_done">Đã xong</string>
+    <string name="tv_empty">Chưa có việc nào 🐾\nBấm “Thêm việc” để bắt đầu kiếm xu nhé!</string>
+    <string name="fab_add_task">Thêm việc</string>
+    <string name="tv_value">0</string>
+    <string name="tv_task_title">Dựng 3 màn hình layout tĩnh Android</string>
+    <string name="tv_reward_badge">+25 Xu • +40 EXP</string>
+    <string name="btn_delete_task_desc">Xóa công việc</string>
+    <string name="nav_pet">Thú cưng</string>
+    <string name="nav_tasks">Công việc</string>
+    <string name="nav_focus">Tập trung</string>
+    <string name="nav_stats">Thống kê</string>
+
+    <!-- Widget màn hình chính -->
+    <string name="widget_description">Xem nhanh mèo, xu và việc còn lại</string>
+    <string name="widget_placeholder_name">Mimi • Level 1</string>
+    <string name="widget_pet_desc">Thú cưng</string>
+    <string name="widget_hunger">No bụng</string>
+    <string name="widget_happiness">Vui vẻ</string>
+    <string name="widget_coins">Xu</string>
+    <string name="widget_tasks">Việc còn lại</string>
+    <string name="btn_add_widget">🐾 Thêm widget ra màn hình chính</string>
+
+    <!-- Nhiệm vụ hằng ngày -->
+    <string name="quests_title">Nhiệm vụ hôm nay 📋</string>
+
+    <!-- Mèo lớn dần -->
+    <string name="accessory_desc">Phụ kiện của thú cưng</string>
+
+    <!-- Pomodoro -->
+    <string name="btn_preset_custom">Khác</string>
+
+    <!-- Việc lặp lại -->
+    <string name="repeat_label">Lặp lại (làm xong sẽ tự tạo việc kế tiếp)</string>
+    <string name="repeat_none">Không</string>
+    <string name="repeat_daily">Hằng ngày</string>
+    <string name="repeat_weekly">Hằng tuần</string>
 </resources>

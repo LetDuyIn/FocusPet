@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<!-- Cuộn được để không mất hàng nút trên điện thoại màn hình nhỏ -->
+<androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:fillViewport="true"
     android:background="@color/bg_cream">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/pet_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp">
 
     <!-- Header: Level Pet và Tiền Xu -->
     <com.google.android.material.card.MaterialCardView
@@ -24,21 +31,21 @@
             android:gravity="center_vertical"
             android:padding="16dp">
 
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_pet_level"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Level 2 • Mimi 🐱"
+                android:text="@string/tv_pet_level"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
 
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_coins"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="🪙 120 Xu"
+                android:text="@string/tv_coins"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/text_primary"
@@ -76,12 +83,35 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
+            <!-- Phụ kiện theo giai đoạn trưởng thành (nơ / mũ tốt nghiệp / vương miện), đặt trên đầu mèo -->
+            <ImageView
+                android:id="@+id/iv_accessory"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:contentDescription="@string/accessory_desc"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="@id/lottie_pet"
+                app:layout_constraintStart_toStartOf="@id/lottie_pet"
+                app:layout_constraintEnd_toEndOf="@id/lottie_pet" />
+
+            <!-- Giai đoạn trưởng thành hiện tại và cấp cần để lớn tiếp -->
+            <com.midterm.petfocus.ui.art.ArtTextView
+                android:id="@+id/tv_stage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <!-- Bong bóng lời thoại của Pet -->
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_pet_dialogue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Meow! Sen làm bài tập LTDD chưa?"
+                android:text="@string/tv_pet_dialogue"
                 android:textColor="@color/text_primary"
                 android:textSize="13sp"
                 android:background="@drawable/bg_speech_bubble"
@@ -109,10 +139,10 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:layout_marginBottom="6dp">
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="🍎 No bụng:"
+                android:text="@string/fragment_pet_text"
                 android:textSize="13sp"
                 android:textColor="@color/text_primary" />
             <ProgressBar
@@ -129,10 +159,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical">
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:layout_width="80dp"
                 android:layout_height="wrap_content"
-                android:text="💖 Vui vẻ:"
+                android:text="@string/fragment_pet_text_2"
                 android:textSize="13sp"
                 android:textColor="@color/text_primary" />
             <ProgressBar
@@ -142,6 +172,70 @@
                 android:layout_height="12dp"
                 android:progress="90"
                 android:progressDrawable="@drawable/progress_mint" />
+        </LinearLayout>
+
+        <!-- Chỉ số Sức lực -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+            <com.midterm.petfocus.ui.art.ArtTextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="@string/fragment_pet_text_3"
+                android:textSize="13sp"
+                android:textColor="@color/text_primary" />
+            <ProgressBar
+                android:id="@+id/progress_energy"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:progress="80"
+                android:progressDrawable="@drawable/progress_indigo" />
+        </LinearLayout>
+
+        <!-- Chỉ số Sạch sẽ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+            <com.midterm.petfocus.ui.art.ArtTextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="@string/fragment_pet_text_4"
+                android:textSize="13sp"
+                android:textColor="@color/text_primary" />
+            <ProgressBar
+                android:id="@+id/progress_clean"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:progress="80"
+                android:progressDrawable="@drawable/progress_sky" />
+        </LinearLayout>
+
+        <!-- Kinh nghiệm để lên cấp -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginTop="6dp">
+            <com.midterm.petfocus.ui.art.ArtTextView
+                android:id="@+id/tv_exp"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="@string/tv_exp"
+                android:textSize="13sp"
+                android:textColor="@color/text_primary" />
+            <ProgressBar
+                android:id="@+id/progress_exp"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="12dp"
+                android:progress="0"
+                android:progressDrawable="@drawable/progress_gold" />
         </LinearLayout>
     </LinearLayout>
 
@@ -154,53 +248,67 @@
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/layout_pet_stats">
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_feed"
             android:layout_width="0dp"
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Cho ăn"
+            android:text="@string/btn_feed"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#FF9F6B" />
+            android:backgroundTint="@color/peach" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_cuddle"
             android:layout_width="0dp"
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Nựng"
+            android:text="@string/btn_cuddle"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#6BCB9F" />
+            android:backgroundTint="@color/mint" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_clean"
             android:layout_width="0dp"
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Tắm"
+            android:text="@string/btn_clean"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#38BDF8" />
+            android:backgroundTint="@color/sky" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_sleep"
             android:layout_width="0dp"
             android:layout_columnWeight="1"
             android:layout_height="50dp"
             android:layout_margin="3dp"
-            android:text="Ngủ"
+            android:text="@string/btn_sleep"
             android:textSize="11sp"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             app:cornerRadius="25dp"
-            android:backgroundTint="#818CF8" />
+            android:backgroundTint="@color/indigo" />
     </GridLayout>
 
+    <!-- Ghim widget ra màn hình chính (Android 8+ và launcher có hỗ trợ) -->
+    <com.midterm.petfocus.ui.art.ArtButton
+        android:id="@+id/btn_add_widget"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/btn_add_widget"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/grid_actions"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

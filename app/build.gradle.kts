@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -29,6 +30,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -40,6 +44,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation("androidx.test:rules:1.7.0")
+    androidTestImplementation("androidx.work:work-testing:2.11.2")
     // 1. Thư viện hoạt ảnh Lottie cho thú cưng
     implementation("com.airbnb.android:lottie:6.4.0")
 
@@ -48,7 +54,16 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.7.7")
 
     // 3. Thư viện cơ sở dữ liệu Room Database (lưu task và pet)
-    val roomVersion = "2.6.1"
+    val roomVersion = "2.8.5"
     implementation("androidx.room:room-runtime:$roomVersion")
     implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
+
+    // 4. ViewModel + Fragment KTX (by viewModels, viewModelScope, lifecycleScope)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.9")
+
+    // 5. WorkManager: chạy nền định kỳ để gửi thông báo nhắc nhở
+    implementation("androidx.work:work-runtime-ktx:2.11.2")
 }
