@@ -15,6 +15,7 @@ import com.midterm.petfocus.databinding.ItemStatBinding
 import com.midterm.petfocus.logic.Badge
 import com.midterm.petfocus.logic.StatsSnapshot
 import com.midterm.petfocus.ui.RewardFx
+import com.midterm.petfocus.ui.art.ArtIcons
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -80,7 +81,7 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
         viewLifecycleOwner.lifecycleScope.launch {
             val reward = repo.claimBadge(badge, s)
             if (reward != null) {
-                Snackbar.make(b.root, "${badge.emoji} Đã nhận ${reward.coins} xu từ huy hiệu “${badge.title}”", Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(b.root, ArtIcons.art(requireContext(), "${badge.emoji} Đã nhận ${reward.coins} 🪙 từ huy hiệu “${badge.title}”")!!, Snackbar.LENGTH_SHORT).show()
             }
         }
     }

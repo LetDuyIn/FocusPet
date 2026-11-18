@@ -26,7 +26,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <!-- Tiêu đề công việc -->
-        <TextView
+        <com.midterm.petfocus.ui.art.ArtTextView
             android:id="@+id/tv_task_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             app:layout_constraintEnd_toStartOf="@id/btn_delete_task" />
 
         <!-- Badge Phần thưởng: +25 Xu 🪙 -->
-        <TextView
+        <com.midterm.petfocus.ui.art.ArtTextView
             android:id="@+id/tv_reward_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_menu_delete"
+            android:src="@drawable/ic_delete"
             android:contentDescription="@string/btn_delete_task_desc"
             app:tint="@color/text_secondary"
             app:layout_constraintTop_toTopOf="parent"

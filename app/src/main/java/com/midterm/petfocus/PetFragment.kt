@@ -20,6 +20,7 @@ import com.midterm.petfocus.logic.GameRules
 import com.midterm.petfocus.logic.Mood
 import com.midterm.petfocus.logic.PetAction
 import com.midterm.petfocus.ui.RewardFx
+import com.midterm.petfocus.ui.art.ArtIcons
 import com.midterm.petfocus.ui.pet.PetReaction
 import com.midterm.petfocus.ui.pet.PetViewModel
 import com.midterm.petfocus.ui.pet.ShopSheet
@@ -164,7 +165,7 @@ class PetFragment : Fragment(R.layout.fragment_pet) {
             val p = vm.pet.value
             Snackbar.make(
                 b.root,
-                "🎉 ${p?.name ?: "Thú cưng"} lên Level ${p?.level}! Thưởng thêm xu và vui vẻ đầy.",
+                ArtIcons.art(requireContext(), "🎉 ${p?.name ?: "Thú cưng"} lên Level ${p?.level}! Thưởng thêm 🪙 và vui vẻ đầy.")!!,
                 Snackbar.LENGTH_LONG
             ).show()
         }

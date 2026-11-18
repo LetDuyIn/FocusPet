@@ -43,6 +43,10 @@ Bỏ bê thì mèo đói, buồn rồi giận dỗi.
 **🔔 Khác**
 - Thông báo nhắc khi mèo cần chăm sóc hoặc có việc quá hạn (tối đa 3 giờ nhắc một lần).
 - Hỗ trợ chế độ tối. Màn chào lần đầu để đặt tên mèo.
+- **Toàn bộ icon đều tự vẽ** (icon app, thanh tab, xu, huy hiệu, cửa hàng…), không dùng emoji hay icon hệ thống.
+  Hình được định nghĩa trong [`tools/gen_art_icons.py`](tools/gen_art_icons.py). Sửa hình rồi chạy
+  `python3 tools/gen_art_icons.py` để sinh lại file `res/drawable/art_*.xml`.
+  Trong code vẫn viết emoji cho dễ đọc; `ArtTextView` / `ArtButton` tự đổi chúng thành icon khi hiển thị.
 
 ## Luật chơi
 

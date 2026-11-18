@@ -11,6 +11,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.midterm.petfocus.R
+import com.midterm.petfocus.ui.art.ArtTextView
 
 /** Các hiệu ứng nhỏ khi nhận thưởng: chữ bay lên, nảy, đếm số. */
 object RewardFx {
@@ -21,7 +22,7 @@ object RewardFx {
         val root = activity.findViewById<ViewGroup>(android.R.id.content) as? FrameLayout ?: return
         val density = anchor.resources.displayMetrics.density
 
-        val label = TextView(activity).apply {
+        val label = ArtTextView(activity).apply {
             this.text = text
             textSize = 18f
             setTypeface(typeface, android.graphics.Typeface.BOLD)

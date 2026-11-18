@@ -21,6 +21,7 @@ import com.midterm.petfocus.databinding.DialogAddTaskBinding
 import com.midterm.petfocus.databinding.FragmentTasksBinding
 import com.midterm.petfocus.logic.GameRules
 import com.midterm.petfocus.ui.RewardFx
+import com.midterm.petfocus.ui.art.ArtIcons
 import com.midterm.petfocus.ui.tasks.TaskAdapter
 import com.midterm.petfocus.ui.tasks.TaskFilter
 import com.midterm.petfocus.ui.tasks.TasksViewModel
@@ -93,7 +94,7 @@ class TasksFragment : Fragment(R.layout.fragment_tasks) {
                     }
                 }
                 launch { vm.summary.collect { b.tvTasksSummary.text = it } }
-                launch { vm.messages.collect { Snackbar.make(b.root, it, Snackbar.LENGTH_LONG).show() } }
+                launch { vm.messages.collect { Snackbar.make(b.root, ArtIcons.art(requireContext(), it)!!, Snackbar.LENGTH_LONG).show() } }
             }
         }
     }

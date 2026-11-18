@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Sinh tự động bởi tools/gen_art_icons.py, sửa hình ở đó rồi chạy lại -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path android:pathData="M6,4 H18 C19.1,4 20,4.9 20,6 V20 C20,21.1 19.1,22 18,22 H6 C4.9,22 4,21.1 4,20 V6 C4,4.9 4.9,4 6,4 Z"
+        android:fillColor="#FF9F6B" />
+    <path android:pathData="M6.5,6.5 H17.5 V19.5 H6.5 Z"
+        android:fillColor="#FFF8F0" />
+    <path android:pathData="M9,2.5 H15 V6 H9 Z"
+        android:fillColor="#3D3A50" />
+    <path android:pathData="M9,10 H15.5 M9,13 H15.5 M9,16 H13.5"
+        android:strokeColor="#C9C6D6"
+        android:strokeWidth="1.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

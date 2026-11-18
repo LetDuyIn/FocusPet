@@ -17,7 +17,7 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
-        <TextView
+        <com.midterm.petfocus.ui.art.ArtTextView
             android:id="@+id/tv_emoji"
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -47,7 +47,7 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_buy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

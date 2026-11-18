@@ -23,7 +23,7 @@
             android:maxLength="60" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -39,7 +39,7 @@
         app:singleSelection="true"
         app:selectionRequired="true">
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_easy"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
@@ -47,7 +47,7 @@
             android:layout_weight="1"
             android:text="@string/btn_easy" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_medium"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
@@ -55,7 +55,7 @@
             android:layout_weight="1"
             android:text="@string/btn_medium" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_hard"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
@@ -64,7 +64,7 @@
             android:text="@string/btn_hard" />
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:id="@+id/tv_reward_preview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
+        <com.midterm.petfocus.ui.art.ArtTextView
             android:id="@+id/tv_due"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
             android:textColor="@color/text_primary"
             android:textSize="14sp" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_clear_due"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
@@ -97,7 +97,7 @@
             android:text="@string/btn_clear_due"
             android:visibility="gone" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_pick_due"
             style="@style/Widget.Material3.Button.TonalButton"
             android:layout_width="wrap_content"
@@ -105,7 +105,7 @@
             android:text="@string/btn_pick_due" />
     </LinearLayout>
 
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -121,7 +121,7 @@
         app:singleSelection="true"
         app:selectionRequired="true">
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_repeat_none"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
@@ -129,7 +129,7 @@
             android:layout_weight="1"
             android:text="@string/repeat_none" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_repeat_daily"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
@@ -137,7 +137,7 @@
             android:layout_weight="1"
             android:text="@string/repeat_daily" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_repeat_weekly"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"

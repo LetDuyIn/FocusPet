@@ -24,6 +24,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.midterm.petfocus.ui.focus.FocusResult
 import com.midterm.petfocus.ui.focus.FocusViewModel
 import com.midterm.petfocus.reminder.Reminders
+import com.midterm.petfocus.ui.art.ArtIcons
 import com.midterm.petfocus.ui.pet.PetViewModel
 import kotlinx.coroutines.launch
 
@@ -121,7 +122,7 @@ class MainActivity : AppCompatActivity() {
             addView(input)
         }
         MaterialAlertDialogBuilder(this)
-            .setTitle("Chào mừng đến FocusPet! 🐾")
+            .setTitle(ArtIcons.art(this, "Chào mừng đến FocusPet! 🐾"))
             .setMessage(
                 "Làm xong việc và tập trung không dùng điện thoại để kiếm xu, nuôi mèo lớn lên.\n\n" +
                     "Hãy đặt tên cho bé mèo của bạn:"
@@ -143,15 +144,15 @@ class MainActivity : AppCompatActivity() {
         val (title, message) = when (result) {
             is FocusResult.Completed -> {
                 val r = result.reward
-                var msg = "Bạn đã tập trung ${result.minutes} phút.\n+${r.coins} xu • +${r.exp} EXP"
+                var msg = "Bạn đã tập trung ${result.minutes} phút.\n+${r.coins} 🪙 • +${r.exp} EXP ⭐"
                 if (r.levelsGained > 0) msg += "\n🎉 Thú cưng đã lên cấp!"
                 "Tuyệt vời! 🎉" to msg
             }
             is FocusResult.Failed -> "Phiên tập trung thất bại" to result.reason
         }
         MaterialAlertDialogBuilder(this)
-            .setTitle(title)
-            .setMessage(message)
+            .setTitle(ArtIcons.art(this, title))
+            .setMessage(ArtIcons.art(this, message))
             .setPositiveButton("OK", null)
             .show()
         petVm.refresh()

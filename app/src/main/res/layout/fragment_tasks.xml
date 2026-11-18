@@ -7,7 +7,7 @@
     android:padding="20dp"
     android:background="@color/bg_cream">
 
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:id="@+id/tv_title_tasks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:id="@+id/tv_tasks_summary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
     </com.google.android.material.chip.ChipGroup>
 
     <!-- Hiện khi danh sách trống -->
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:id="@+id/tv_empty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -32,7 +32,7 @@ class FocusFragment : Fragment(R.layout.fragment_focus) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val b = FragmentFocusBinding.bind(view)
-        val presets = mapOf(b.btnPreset15 to 15, b.btnPreset25 to 25, b.btnPreset45 to 45)
+        val presets = mapOf<MaterialButton, Int>(b.btnPreset15 to 15, b.btnPreset25 to 25, b.btnPreset45 to 45)
 
         presets.forEach { (btn, min) -> btn.setOnClickListener { vm.select(min) } }
 

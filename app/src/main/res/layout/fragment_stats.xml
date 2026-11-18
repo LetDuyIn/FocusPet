@@ -11,7 +11,7 @@
         android:orientation="vertical"
         android:padding="20dp">
 
-        <TextView
+        <com.midterm.petfocus.ui.art.ArtTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fragment_stats_text"
@@ -19,7 +19,7 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <TextView
+        <com.midterm.petfocus.ui.art.ArtTextView
             android:id="@+id/tv_stats_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,7 +79,7 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
+                <com.midterm.petfocus.ui.art.ArtTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/fragment_stats_text_2"
@@ -95,7 +95,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
+        <com.midterm.petfocus.ui.art.ArtTextView
             android:id="@+id/tv_badges_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

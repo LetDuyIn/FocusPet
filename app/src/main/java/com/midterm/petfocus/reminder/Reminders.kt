@@ -21,6 +21,7 @@ import com.midterm.petfocus.MainActivity
 import com.midterm.petfocus.R
 import com.midterm.petfocus.logic.GameRules
 import com.midterm.petfocus.logic.Mood
+import com.midterm.petfocus.ui.art.ArtIcons
 import java.util.concurrent.TimeUnit
 
 object Reminders {
@@ -61,7 +62,7 @@ object Reminders {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(title)
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
@@ -91,7 +92,7 @@ class PetReminderWorker(context: Context, params: WorkerParameters) : CoroutineW
             Mood.DIRTY -> "${pet.name} bẩn quá, tắm cho ${pet.name} đi 🛁"
             else -> if (overdue > 0) "Bạn có $overdue việc đã quá hạn. Làm xong để kiếm xu nhé!" else null
         }
-        if (text != null) Reminders.notifyIfDue(applicationContext, "FocusPet", text)
+        if (text != null) Reminders.notifyIfDue(applicationContext, "FocusPet", ArtIcons.plain(text))
         return Result.success()
     }
 }

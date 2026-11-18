@@ -7,7 +7,7 @@
     android:padding="24dp"
     android:background="@color/bg_cream">
 
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:id="@+id/tv_focus_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
+    <com.midterm.petfocus.ui.art.ArtTextView
         android:id="@+id/tv_focus_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             android:gravity="center"
             android:orientation="vertical">
 
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_timer_countdown"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/text_primary" />
 
-            <TextView
+            <com.midterm.petfocus.ui.art.ArtTextView
                 android:id="@+id/tv_session_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
         android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@id/btn_start_focus">
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_preset_15"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
@@ -89,7 +89,7 @@
             android:text="@string/btn_preset_15"
             app:cornerRadius="20dp" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_preset_25"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
             app:cornerRadius="20dp"
             android:backgroundTint="@color/peach" />
 
-        <com.google.android.material.button.MaterialButton
+        <com.midterm.petfocus.ui.art.ArtButton
             android:id="@+id/btn_preset_45"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
@@ -109,7 +109,7 @@
     </LinearLayout>
 
     <!-- Nút Bắt đầu đếm giờ -->
-    <com.google.android.material.button.MaterialButton
+    <com.midterm.petfocus.ui.art.ArtButton
         android:id="@+id/btn_start_focus"
         android:layout_width="match_parent"
         android:layout_height="56dp"

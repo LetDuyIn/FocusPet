@@ -2,21 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_pet"
-        android:icon="@android:drawable/star_on"
+        android:icon="@drawable/ic_nav_pet"
         android:title="@string/nav_pet" />
 
     <item
         android:id="@+id/nav_tasks"
-        android:icon="@android:drawable/checkbox_on_background"
+        android:icon="@drawable/ic_nav_tasks"
         android:title="@string/nav_tasks" />
 
     <item
         android:id="@+id/nav_focus"
-        android:icon="@android:drawable/ic_menu_recent_history"
+        android:icon="@drawable/ic_nav_focus"
         android:title="@string/nav_focus" />
 
     <item
         android:id="@+id/nav_stats"
-        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:icon="@drawable/ic_nav_stats"
         android:title="@string/nav_stats" />
 </menu>
