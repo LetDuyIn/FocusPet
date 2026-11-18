@@ -231,6 +231,13 @@ object GameRules {
     // ---- Thời gian ----
     const val DAY_MS = 24 * 60 * 60 * 1000L
 
+    /** Cộng/trừ ngày bằng Calendar để đúng cả khi đổi giờ mùa hè. */
+    fun addDays(dayStart: Long, days: Int): Long = Calendar.getInstance().run {
+        timeInMillis = dayStart
+        add(Calendar.DAY_OF_YEAR, days)
+        startOfDay(timeInMillis)
+    }
+
     fun startOfDay(time: Long): Long = Calendar.getInstance().run {
         timeInMillis = time
         set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)

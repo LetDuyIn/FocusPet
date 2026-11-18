@@ -56,6 +56,20 @@ data class Task(
     val parentId: Long? = null
 )
 
+/**
+ * Thưởng hằng ngày đã nhận: nhiệm vụ trong ngày, rương hoàn thành cả 3 nhiệm vụ, điểm danh.
+ * Khóa chính gồm ngày + mã nhiệm vụ nên mỗi thưởng chỉ nhận được một lần mỗi ngày.
+ */
+@Entity(tableName = "daily_claims", primaryKeys = ["dayStart", "questId"])
+data class DailyClaim(
+    /** Mốc 0h của ngày nhận thưởng. */
+    val dayStart: Long,
+    /** Tên enum Quest, hoặc "CHECK_IN" / "ALL_DONE". */
+    val questId: String,
+    val coins: Int,
+    val claimedAt: Long
+)
+
 /** Huy hiệu đã nhận thưởng, để mỗi huy hiệu chỉ nhận xu một lần. */
 @Entity(tableName = "badge_claims")
 data class BadgeClaim(

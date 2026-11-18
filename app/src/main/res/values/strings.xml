@@ -53,6 +53,9 @@
     <string name="nav_focus">Tập trung</string>
     <string name="nav_stats">Thống kê</string>
 
+    <!-- Nhiệm vụ hằng ngày -->
+    <string name="quests_title">Nhiệm vụ hôm nay 📋</string>
+
     <!-- Mèo lớn dần -->
     <string name="accessory_desc">Phụ kiện của thú cưng</string>
 

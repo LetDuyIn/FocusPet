@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="4dp"
+    app:cardBackgroundColor="@color/surface_white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <com.midterm.petfocus.ui.art.ArtTextView
+            android:id="@+id/tv_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textSize="22sp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <com.midterm.petfocus.ui.art.ArtTextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:layout_marginTop="6dp"
+                android:progressDrawable="@drawable/progress_peach" />
+
+            <com.midterm.petfocus.ui.art.ArtTextView
+                android:id="@+id/tv_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <com.midterm.petfocus.ui.art.ArtButton
+            android:id="@+id/btn_claim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="80dp"
+            android:textSize="12sp"
+            app:cornerRadius="18dp" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

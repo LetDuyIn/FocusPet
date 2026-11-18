@@ -2,6 +2,10 @@ package com.midterm.petfocus.data
 
 import androidx.room.withTransaction
 import com.midterm.petfocus.logic.Badge
+import com.midterm.petfocus.logic.DayCounts
+import com.midterm.petfocus.logic.Quest
+import com.midterm.petfocus.logic.QuestProgress
+import com.midterm.petfocus.logic.Quests
 import com.midterm.petfocus.logic.GameRules
 import com.midterm.petfocus.logic.ItemType
 import com.midterm.petfocus.logic.PetAction
@@ -29,6 +33,7 @@ class GameRepository(private val db: AppDatabase) {
     private val focusDao = db.focusDao()
     private val ownedDao = db.ownedItemDao()
     private val badgeDao = db.badgeDao()
+    private val dailyDao = db.dailyDao()
 
     private fun now() = System.currentTimeMillis()
     private fun today() = GameRules.startOfDay(now())
@@ -165,6 +170,65 @@ class GameRepository(private val db: AppDatabase) {
     ) { sessions, taskTimes, failed, p ->
         StatsCalculator.build(sessions, taskTimes, failed, p.level, now())
     }
+
+    // ---------- Nhiệm vụ hằng ngày & điểm danh ----------
+
+    /** Tiến độ 3 nhiệm vụ của hôm nay (ngày tính lúc gọi hàm). */
+    fun dailyQuests(): Flow<List<QuestProgress>> {
+        val day = today()
+        val counts = combine(
+            taskDao.observeDoneSince(day), taskDao.observeHardDoneSince(day),
+            focusDao.observeMinutesSince(day), focusDao.observeCompletedSince(day)
+        ) { done, hard, minutes, sessions -> DayCounts(done, hard, minutes, sessions) }
+        return combine(counts, dailyDao.observeClaimed(day)) { c, claimed ->
+            Quests.forDay(day).map { q -> QuestProgress(q, q.progressOf(c).coerceAtMost(q.target), q.name in claimed) }
+        }
+    }
+
+    /** Đã nhận rương thưởng hoàn thành cả 3 nhiệm vụ hôm nay chưa. */
+    fun allDoneClaimedToday(): Flow<Boolean> =
+        dailyDao.observeClaimed(today()).map { Quests.ALL_DONE_ID in it }
+
+    /** Nhận thưởng một nhiệm vụ đã hoàn thành. Trả về null nếu chưa xong hoặc đã nhận. */
+    suspend fun claimQuest(quest: Quest): Reward? = db.withTransaction {
+        val day = today()
+        if (quest !in Quests.forDay(day) || dailyDao.isClaimed(day, quest.name) > 0) return@withTransaction null
+        if (quest.progressOf(countsFor(day)) < quest.target) return@withTransaction null
+        dailyDao.insert(DailyClaim(day, quest.name, quest.rewardCoins, now()))
+        grant(quest.rewardCoins, Quests.QUEST_EXP)
+    }
+
+    /** Nhận rương thưởng khi đã nhận đủ cả 3 nhiệm vụ trong ngày. */
+    suspend fun claimAllDoneBonus(): Reward? = db.withTransaction {
+        val day = today()
+        if (dailyDao.isClaimed(day, Quests.ALL_DONE_ID) > 0) return@withTransaction null
+        if (Quests.forDay(day).any { dailyDao.isClaimed(day, it.name) == 0 }) return@withTransaction null
+        dailyDao.insert(DailyClaim(day, Quests.ALL_DONE_ID, Quests.ALL_DONE_BONUS, now()))
+        grant(Quests.ALL_DONE_BONUS, 0, happinessDelta = 10f)
+    }
+
+    /**
+     * Điểm danh mỗi ngày khi mở app. Trả về (chuỗi ngày liên tiếp, xu nhận được),
+     * hoặc null nếu hôm nay đã điểm danh rồi.
+     */
+    suspend fun checkIn(): Pair<Int, Int>? = db.withTransaction {
+        val day = today()
+        if (dailyDao.isClaimed(day, Quests.CHECK_IN_ID) > 0) return@withTransaction null
+        val previous = dailyDao.daysClaimed(Quests.CHECK_IN_ID).toSet()
+        val streak = Quests.consecutiveDaysEnding(previous, GameRules.addDays(day, -1)) + 1
+        val coins = Quests.checkInReward(streak)
+        dailyDao.insert(DailyClaim(day, Quests.CHECK_IN_ID, coins, now()))
+        grant(coins, 0)
+        streak to coins
+    }
+
+    // Đọc trực tiếp (không qua Flow) vì đang ở trong transaction
+    private suspend fun countsFor(day: Long) = DayCounts(
+        tasksDone = taskDao.countDoneSince(day),
+        hardTasksDone = taskDao.countHardDoneSince(day),
+        focusMinutes = focusDao.minutesSince(day),
+        focusSessions = focusDao.completedSince(day)
+    )
 
     // ---------- Huy hiệu ----------
     val claimedBadges: Flow<Set<String>> = badgeDao.observeClaimed().map { it.toSet() }
