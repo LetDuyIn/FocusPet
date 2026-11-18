@@ -11,6 +11,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.Snackbar
 import com.midterm.petfocus.databinding.FragmentStatsBinding
 import com.midterm.petfocus.databinding.ItemBadgeBinding
+import com.midterm.petfocus.databinding.ItemQuestBinding
+import com.midterm.petfocus.logic.QuestProgress
+import com.midterm.petfocus.logic.Quests
 import com.midterm.petfocus.databinding.ItemStatBinding
 import com.midterm.petfocus.logic.Badge
 import com.midterm.petfocus.logic.StatsSnapshot
@@ -26,12 +29,65 @@ class StatsFragment : Fragment(R.layout.fragment_stats) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val b = FragmentStatsBinding.bind(view)
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                combine(repo.stats, repo.claimedBadges) { s, claimed -> s to claimed }
-                    .collect { (s, claimed) -> render(b, s, claimed) }
+        b.btnAllDone.setOnClickListener { btn ->
+            btn.isEnabled = false
+            viewLifecycleOwner.lifecycleScope.launch {
+                repo.claimAllDoneBonus()?.let {
+                    RewardFx.floatText(btn, "+${it.coins} 🪙")
+                    Snackbar.make(b.root, ArtIcons.art(requireContext(), "🎉 Hoàn thành cả 3 nhiệm vụ! +${it.coins} 🪙")!!, Snackbar.LENGTH_SHORT).show()
+                }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    combine(repo.stats, repo.claimedBadges) { s, claimed -> s to claimed }
+                        .collect { (s, claimed) -> render(b, s, claimed) }
+                }
+                // Ngày được chốt khi màn hình mở lại (repeatOnLifecycle), nên qua ngày mới sẽ đổi nhiệm vụ
+                launch {
+                    combine(repo.dailyQuests(), repo.allDoneClaimedToday()) { q, bonus -> q to bonus }
+                        .collect { (quests, bonusClaimed) -> renderQuests(b, quests, bonusClaimed) }
+                }
+            }
+        }
+    }
+
+    private fun renderQuests(b: FragmentStatsBinding, quests: List<QuestProgress>, bonusClaimed: Boolean) {
+        val claimedCount = quests.count { it.claimed }
+        b.tvQuestsTitle.text = "Nhiệm vụ hôm nay 📋 ($claimedCount/${quests.size})"
+        b.layoutQuests.removeAllViews()
+        quests.forEach { qp ->
+            val q = qp.quest
+            val item = ItemQuestBinding.inflate(LayoutInflater.from(requireContext()), b.layoutQuests, false)
+            item.tvIcon.text = q.emoji
+            item.tvTitle.text = q.title
+            item.progress.max = q.target
+            item.progress.progress = qp.progress
+            item.tvProgress.text = "${qp.progress}/${q.target} • +${q.rewardCoins} 🪙 +${Quests.QUEST_EXP} EXP"
+            item.btnClaim.text = when {
+                qp.claimed -> "Đã nhận ✔️"
+                qp.done -> "Nhận"
+                else -> "Chưa xong"
+            }
+            item.btnClaim.isEnabled = qp.done && !qp.claimed
+            item.btnClaim.setOnClickListener { btn ->
+                btn.isEnabled = false
+                viewLifecycleOwner.lifecycleScope.launch {
+                    repo.claimQuest(q)?.let { RewardFx.floatText(btn, "+${it.coins} 🪙") }
+                }
+            }
+            item.root.alpha = if (qp.claimed) 0.6f else 1f
+            b.layoutQuests.addView(item.root)
+        }
+        val allClaimed = claimedCount == quests.size
+        b.btnAllDone.text = when {
+            bonusClaimed -> "🎉 Đã nhận rương hôm nay, mai quay lại nhé!"
+            allClaimed -> "🎉 Mở rương thưởng: +${Quests.ALL_DONE_BONUS} 🪙"
+            else -> "🔒 Nhận đủ 3 nhiệm vụ để mở rương +${Quests.ALL_DONE_BONUS} 🪙"
+        }
+        b.btnAllDone.isEnabled = allClaimed && !bonusClaimed
     }
 
     private fun render(b: FragmentStatsBinding, s: StatsSnapshot, claimed: Set<String>) {

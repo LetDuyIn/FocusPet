@@ -97,10 +97,5 @@ object StatsCalculator {
         return best
     }
 
-    /** Cộng/trừ ngày bằng Calendar để đúng cả khi đổi giờ mùa hè. */
-    private fun shiftDays(dayStart: Long, days: Int): Long = Calendar.getInstance().run {
-        timeInMillis = dayStart
-        add(Calendar.DAY_OF_YEAR, days)
-        GameRules.startOfDay(timeInMillis)
-    }
+    private fun shiftDays(dayStart: Long, days: Int): Long = GameRules.addDays(dayStart, days)
 }

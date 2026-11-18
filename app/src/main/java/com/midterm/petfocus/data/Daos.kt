@@ -52,11 +52,35 @@ interface TaskDao {
     @Query("SELECT COALESCE(SUM(coinsEarned), 0) FROM tasks WHERE isDone = 1 AND completedAt >= :since")
     fun observeCoinsSince(since: Long): Flow<Int>
 
+    @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 1 AND difficulty = 'HARD' AND completedAt >= :since")
+    fun observeHardDoneSince(since: Long): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 1 AND completedAt >= :since")
+    suspend fun countDoneSince(since: Long): Int
+
+    @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 1 AND difficulty = 'HARD' AND completedAt >= :since")
+    suspend fun countHardDoneSince(since: Long): Int
+
     @Query("SELECT completedAt FROM tasks WHERE isDone = 1 AND completedAt IS NOT NULL")
     fun observeCompletedTimes(): Flow<List<Long>>
 
     @Query("SELECT COUNT(*) FROM tasks WHERE isDone = 0 AND dueDate IS NOT NULL AND dueDate + 86400000 <= :now")
     suspend fun countOverdue(now: Long): Int
+}
+
+@Dao
+interface DailyDao {
+    @Query("SELECT questId FROM daily_claims WHERE dayStart = :day")
+    fun observeClaimed(day: Long): Flow<List<String>>
+
+    @Query("SELECT COUNT(*) FROM daily_claims WHERE dayStart = :day AND questId = :questId")
+    suspend fun isClaimed(day: Long, questId: String): Int
+
+    @Query("SELECT dayStart FROM daily_claims WHERE questId = :questId")
+    suspend fun daysClaimed(questId: String): List<Long>
+
+    @Insert
+    suspend fun insert(claim: DailyClaim)
 }
 
 @Dao
@@ -96,6 +120,12 @@ interface FocusDao {
 
     @Query("SELECT COUNT(*) FROM focus_sessions WHERE status = 'COMPLETED' AND startTime >= :since")
     fun observeCompletedSince(since: Long): Flow<Int>
+
+    @Query("SELECT COALESCE(SUM(actualMinutes), 0) FROM focus_sessions WHERE status = 'COMPLETED' AND startTime >= :since")
+    suspend fun minutesSince(since: Long): Int
+
+    @Query("SELECT COUNT(*) FROM focus_sessions WHERE status = 'COMPLETED' AND startTime >= :since")
+    suspend fun completedSince(since: Long): Int
 
     @Query("SELECT * FROM focus_sessions WHERE status = 'COMPLETED' ORDER BY startTime")
     fun observeCompleted(): Flow<List<FocusSession>>

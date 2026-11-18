@@ -22,6 +22,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.midterm.petfocus.logic.GameRules
+import com.midterm.petfocus.logic.Quests
 import com.midterm.petfocus.ui.focus.FocusMode
 import com.midterm.petfocus.ui.focus.FocusResult
 import com.midterm.petfocus.ui.focus.FocusViewModel
@@ -137,6 +138,7 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Bắt đầu") { _, _ ->
                 petVm.rename(input.text.toString().ifBlank { "Mimi" })
                 prefs.edit().putBoolean("onboarded", true).apply()
+                checkInIfNeeded()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !Reminders.canNotify(this)) {
                     notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
@@ -175,6 +177,26 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         focusVm.onAppShown()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Lần đầu mở app thì đợi xong màn chào rồi mới điểm danh
+        if (getSharedPreferences("app", MODE_PRIVATE).getBoolean("onboarded", false)) checkInIfNeeded()
+    }
+
+    /** Điểm danh mỗi ngày một lần khi mở app; điểm danh liên tiếp thì thưởng tăng dần. */
+    private fun checkInIfNeeded() {
+        lifecycleScope.launch {
+            val (streak, coins) = (application as FocusPetApp).repository.checkIn() ?: return@launch
+            val next = Quests.checkInReward(streak + 1)
+            val tomorrow = if (next > coins) "Mai quay lại để nhận $next 🪙 nhé!" else "Bạn đang nhận mức thưởng cao nhất!"
+            MaterialAlertDialogBuilder(this@MainActivity)
+                .setTitle(ArtIcons.art(this@MainActivity, "Điểm danh ngày $streak 🔥"))
+                .setMessage(ArtIcons.art(this@MainActivity, "+$coins 🪙 cho ngày điểm danh liên tiếp thứ $streak.\n$tomorrow"))
+                .setPositiveButton("Nhận", null)
+                .show()
+        }
     }
 
     override fun onStop() {
