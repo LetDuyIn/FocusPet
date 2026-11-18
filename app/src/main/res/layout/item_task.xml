@@ -1,74 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="#FFFFFF"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="#FFFFFF"
     app:strokeColor="#F1EBFF"
     app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="14dp">
 
         <!-- Checkbox đánh dấu hoàn thành -->
         <com.google.android.material.checkbox.MaterialCheckBox
             android:id="@+id/cb_task_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <!-- Tiêu đề công việc -->
         <TextView
             android:id="@+id/tv_task_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Dựng 3 màn hình layout tĩnh Android"
-            android:textSize="15sp"
-            android:textStyle="bold"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="6dp"
+            android:text="Tên công việc"
             android:textColor="#3D3A50"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintTop_toTopOf="parent"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/cb_task_done"
+            app:layout_constraintEnd_toStartOf="@id/tv_task_difficulty"
             app:layout_constraintStart_toEndOf="@id/cb_task_done"
-            app:layout_constraintEnd_toStartOf="@id/btn_delete_task" />
+            app:layout_constraintTop_toTopOf="@id/cb_task_done" />
 
-        <!-- Badge Phần thưởng: +25 Xu 🪙 -->
+        <!-- Nhãn độ khó & xu -->
         <TextView
-            android:id="@+id/tv_reward_badge"
+            android:id="@+id/tv_task_difficulty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+25 Xu • +40 EXP"
+            android:layout_marginEnd="4dp"
+            android:background="#E8F5E9"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="4dp"
+            android:text="Dễ • +10 xu"
+            android:textColor="#2E7D32"
             android:textSize="12sp"
             android:textStyle="bold"
-            android:textColor="#00734F"
-            android:background="#D1FAE5"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_task_title"
-            app:layout_constraintStart_toEndOf="@id/cb_task_done" />
+            app:layout_constraintBottom_toBottomOf="@id/cb_task_done"
+            app:layout_constraintEnd_toStartOf="@id/btn_delete_task"
+            app:layout_constraintTop_toTopOf="@id/cb_task_done" />
 
         <!-- Nút xóa -->
         <ImageButton
             android:id="@+id/btn_delete_task"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Xóa"
             android:src="@android:drawable/ic_menu_delete"
-            android:contentDescription="Xóa công việc"
-            app:tint="#8A87A0"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@id/cb_task_done"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cb_task_done"
+            app:tint="#8A87A0" />
+
+        <!-- Mô tả -->
+        <TextView
+            android:id="@+id/tv_task_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="2dp"
+            android:text="Ghi chú"
+            android:textColor="#8A87A0"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cb_task_done" />
+
+        <!-- Kết quả sau khi hoàn thành / thất bại -->
+        <TextView
+            android:id="@+id/tv_task_status_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:text="✓ Hoàn thành (+10 xu)"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_task_desc" />
+
+        <!-- Nút không hoàn thành -->
+        <LinearLayout
+            android:id="@+id/layout_task_actions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="end"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_task_desc">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_fail_task"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Không hoàn thành"
+                android:textAllCaps="false"
+                android:textColor="#D32F2F"
+                android:textSize="12sp"
+                app:cornerRadius="10dp"
+                app:strokeColor="#FFCDD2" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
