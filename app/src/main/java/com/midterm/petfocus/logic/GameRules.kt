@@ -37,6 +37,19 @@ object GameRules {
     const val FOCUS_SUCCESS_HAPPINESS = 10f
     const val LEAVE_GRACE_MS = 5_000L
 
+    // ---- Pomodoro ----
+    const val MAX_FOCUS_MINUTES = 120
+    const val SHORT_BREAK_MINUTES = 5
+    const val LONG_BREAK_MINUTES = 15
+    const val SESSIONS_BEFORE_LONG_BREAK = 4
+    const val BREAK_ENERGY = 10f
+    const val BREAK_HAPPINESS = 5f
+
+    /** Sau mỗi 4 phiên hoàn thành trong ngày thì được nghỉ dài, còn lại nghỉ ngắn. */
+    fun breakMinutesAfter(completedToday: Int): Int =
+        if (completedToday > 0 && completedToday % SESSIONS_BEFORE_LONG_BREAK == 0) LONG_BREAK_MINUTES
+        else SHORT_BREAK_MINUTES
+
     fun expToNext(level: Int) = 100 * level
 
     private fun clamp(v: Float) = v.coerceIn(0f, MAX_STAT)
